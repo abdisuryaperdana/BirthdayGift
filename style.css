@@ -568,35 +568,45 @@ body {
 }
 
 
-/* Photo collage */
+/* =========================================
+   PHOTO COLLAGE
+========================================= */
 
 .photo-collage {
 
     position: relative;
 
-    width: min(1000px, 90vw);
+    width: min(1200px, 95vw);
 
-    height: 700px;
+    height: 850px;
+
+    margin: 0 auto;
 
 }
 
+
+/* =========================================
+   PHOTO CARD
+========================================= */
 
 .photo-card {
 
     position: absolute;
 
-    width: 260px;
+    width: 350px;
 
-    padding: 12px 12px 25px;
+    padding: 15px 15px 30px;
 
-    background: white;
+    background: #fff;
 
     box-shadow:
-        0 15px 30px rgba(50, 30, 30, .15);
+        0 20px 40px rgba(50, 30, 30, .16);
+
+    cursor: pointer;
 
     transition:
         transform .4s ease,
-        z-index .2s;
+        box-shadow .4s ease;
 
 }
 
@@ -605,39 +615,48 @@ body {
 
     width: 100%;
 
-    height: 240px;
+    height: 320px;
 
     object-fit: cover;
 
     display: block;
 
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 
 }
 
 
 .photo-card span {
 
+    display: block;
+
     font-family: "Caveat", cursive;
 
-    font-size: 20px;
+    font-size: 23px;
 
     color: #65585a;
 
+    text-align: center;
+
 }
 
 
-/* individual rotation */
+/* =========================================
+   PHOTO POSITIONS
+========================================= */
 
 .photo-1 {
 
-    left: 8%;
+    left: 3%;
 
     top: 50px;
 
-    transform: rotate(-8deg);
+    transform: rotate(-7deg);
+
+    z-index: 2;
 
 }
+
 
 .photo-2 {
 
@@ -645,50 +664,68 @@ body {
 
     top: 20px;
 
-    transform: rotate(5deg);
+    transform: rotate(4deg);
+
+    z-index: 3;
 
 }
+
 
 .photo-3 {
 
-    right: 8%;
+    right: 3%;
 
-    top: 80px;
-
-    transform: rotate(8deg);
-
-}
-
-.photo-4 {
-
-    left: 15%;
-
-    top: 330px;
-
-    transform: rotate(5deg);
-
-}
-
-.photo-5 {
-
-    left: 42%;
-
-    top: 300px;
-
-    transform: rotate(-6deg);
-
-}
-
-.photo-6 {
-
-    right: 10%;
-
-    top: 350px;
+    top: 70px;
 
     transform: rotate(7deg);
 
+    z-index: 2;
+
 }
 
+
+.photo-4 {
+
+    left: 12%;
+
+    top: 420px;
+
+    transform: rotate(5deg);
+
+    z-index: 4;
+
+}
+
+
+.photo-5 {
+
+    left: 43%;
+
+    top: 390px;
+
+    transform: rotate(-6deg);
+
+    z-index: 5;
+
+}
+
+
+.photo-6 {
+
+    right: 8%;
+
+    top: 430px;
+
+    transform: rotate(6deg);
+
+    z-index: 4;
+
+}
+
+
+/* =========================================
+   HOVER
+========================================= */
 
 .photo-card:hover {
 
@@ -696,7 +733,230 @@ body {
         rotate(0deg)
         scale(1.08);
 
-    z-index: 10;
+    z-index: 20;
+
+    box-shadow:
+        0 30px 60px rgba(50, 30, 30, .25);
+
+}
+
+
+/* =========================================
+   PHOTO LIGHTBOX
+========================================= */
+
+.photo-lightbox {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 99999;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 40px;
+
+    background:
+        rgba(35, 25, 27, .92);
+
+    backdrop-filter: blur(10px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity .35s ease,
+        visibility .35s ease;
+
+}
+
+
+.photo-lightbox.active {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+}
+
+
+/* =========================================
+   LIGHTBOX CONTENT
+========================================= */
+
+.lightbox-content {
+
+    max-width: 90vw;
+
+    max-height: 90vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.lightbox-content img {
+
+    max-width: 85vw;
+
+    max-height: 78vh;
+
+    width: auto;
+
+    height: auto;
+
+    object-fit: contain;
+
+    border: 10px solid white;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.4);
+
+    transform:
+        scale(.9)
+        rotate(-1deg);
+
+    transition:
+        transform .4s ease;
+
+}
+
+
+.photo-lightbox.active
+.lightbox-content img {
+
+    transform:
+        scale(1)
+        rotate(0deg);
+
+}
+
+
+#lightboxCaption {
+
+    color: white;
+
+    font-family: "Caveat", cursive;
+
+    font-size: 25px;
+
+    margin-top: 15px;
+
+}
+
+
+/* =========================================
+   CLOSE BUTTON
+========================================= */
+
+.close-lightbox {
+
+    position: absolute;
+
+    top: 25px;
+
+    right: 30px;
+
+    width: 55px;
+
+    height: 55px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.15);
+
+    color: white;
+
+    font-size: 40px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition: .3s;
+
+}
+
+
+.close-lightbox:hover {
+
+    background: rgba(255,255,255,.3);
+
+    transform: rotate(90deg);
+
+}
+
+
+/* =========================================
+   PREV / NEXT
+========================================= */
+
+.lightbox-nav {
+
+    position: absolute;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    width: 60px;
+
+    height: 60px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.15);
+
+    color: white;
+
+    font-size: 55px;
+
+    line-height: 40px;
+
+    cursor: pointer;
+
+    transition: .3s;
+
+}
+
+
+.lightbox-nav:hover {
+
+    background: rgba(255,255,255,.3);
+
+}
+
+
+.lightbox-nav.prev {
+
+    left: 30px;
+
+}
+
+
+.lightbox-nav.next {
+
+    right: 30px;
 
 }
 
@@ -1319,7 +1579,7 @@ body {
 
         grid-template-columns: 1fr 1fr;
 
-        gap: 20px;
+        gap: 18px;
 
     }
 
@@ -1330,18 +1590,102 @@ body {
 
         width: 100%;
 
-        top: auto !important;
+        top: auto;
 
-        left: auto !important;
+        left: auto;
 
-        right: auto !important;
+        right: auto;
+
+        padding: 8px 8px 18px;
+
+        transform: rotate(0deg);
 
     }
 
 
+
     .photo-card img {
 
-        height: 180px;
+        height: 200px;
+
+        margin-bottom: 8px;
+
+    }
+
+
+    .photo-card span {
+
+        font-size: 18px;
+
+    }
+
+    .photo-card:hover {
+
+        transform: scale(1.03);
+
+    }
+
+    .photo-lightbox {
+
+        padding: 20px;
+
+    }
+
+
+    .lightbox-content img {
+
+        max-width: 90vw;
+
+        max-height: 75vh;
+
+        border-width: 6px;
+
+    }
+
+
+    .close-lightbox {
+
+        top: 15px;
+
+        right: 15px;
+
+        width: 45px;
+
+        height: 45px;
+
+        font-size: 32px;
+
+    }
+
+
+    .lightbox-nav {
+
+        width: 45px;
+
+        height: 45px;
+
+        font-size: 40px;
+
+    }
+
+
+    .lightbox-nav.prev {
+
+        left: 10px;
+
+    }
+
+
+    .lightbox-nav.next {
+
+        right: 10px;
+
+    }
+
+
+    #lightboxCaption {
+
+        font-size: 21px;
 
     }
 

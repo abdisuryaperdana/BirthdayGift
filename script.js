@@ -188,22 +188,294 @@ voiceNote.addEventListener("ended", () => {
 
 
 /* =========================================
-   CLICK PHOTO EFFECT
+   PHOTO LIGHTBOX
 ========================================= */
 
-const photos =
+const photoCards =
     document.querySelectorAll(".photo-card");
 
+const photoLightbox =
+    document.getElementById("photoLightbox");
 
-photos.forEach((photo) => {
+const lightboxImage =
+    document.getElementById("lightboxImage");
 
-    photo.addEventListener("click", () => {
+const lightboxCaption =
+    document.getElementById("lightboxCaption");
 
-        photo.classList.toggle("selected");
+const closeLightbox =
+    document.getElementById("closeLightbox");
+
+const prevPhoto =
+    document.getElementById("prevPhoto");
+
+const nextPhoto =
+    document.getElementById("nextPhoto");
+
+
+/*
+    Simpan semua foto
+*/
+
+const photoData = [];
+
+photoCards.forEach((card) => {
+
+    const image =
+        card.querySelector("img");
+
+    const caption =
+        card.querySelector("span");
+
+    photoData.push({
+
+        src: image.src,
+
+        caption: caption
+            ? caption.textContent
+            : ""
 
     });
 
 });
+
+
+let currentPhoto = 0;
+
+
+/* =========================================
+   OPEN LIGHTBOX
+========================================= */
+
+function openPhoto(index) {
+
+    currentPhoto = index;
+
+    const photo =
+        photoData[currentPhoto];
+
+    lightboxImage.src =
+        photo.src;
+
+    lightboxCaption.textContent =
+        photo.caption;
+
+    photoLightbox.classList.add("active");
+
+    /*
+        Disable scroll ketika popup terbuka
+    */
+
+    document.body.style.overflow = "hidden";
+
+}
+
+
+/* =========================================
+   CLOSE LIGHTBOX
+========================================= */
+
+function closePhoto() {
+
+    photoLightbox.classList.remove("active");
+
+    document.body.style.overflow = "";
+
+}
+
+
+/* =========================================
+   NEXT PHOTO
+========================================= */
+
+function showNextPhoto() {
+
+    currentPhoto++;
+
+    if (currentPhoto >= photoData.length) {
+
+        currentPhoto = 0;
+
+    }
+
+    updateLightbox();
+
+}
+
+
+/* =========================================
+   PREVIOUS PHOTO
+========================================= */
+
+function showPreviousPhoto() {
+
+    currentPhoto--;
+
+    if (currentPhoto < 0) {
+
+        currentPhoto =
+            photoData.length - 1;
+
+    }
+
+    updateLightbox();
+
+}
+
+
+/* =========================================
+   UPDATE LIGHTBOX
+========================================= */
+
+function updateLightbox() {
+
+    const photo =
+        photoData[currentPhoto];
+
+
+    /*
+        Animasi kecil ketika berganti foto
+    */
+
+    lightboxImage.style.opacity = "0";
+
+    lightboxImage.style.transform =
+        "scale(.9)";
+
+
+    setTimeout(() => {
+
+        lightboxImage.src =
+            photo.src;
+
+        lightboxCaption.textContent =
+            photo.caption;
+
+        lightboxImage.style.opacity = "1";
+
+        lightboxImage.style.transform =
+            "scale(1)";
+
+    }, 150);
+
+}
+
+
+/* =========================================
+   CLICK PHOTO
+========================================= */
+
+photoCards.forEach((card, index) => {
+
+    card.addEventListener("click", () => {
+
+        openPhoto(index);
+
+    });
+
+});
+
+
+/* =========================================
+   BUTTON EVENTS
+========================================= */
+
+closeLightbox.addEventListener(
+    "click",
+    closePhoto
+);
+
+
+nextPhoto.addEventListener(
+    "click",
+    showNextPhoto
+);
+
+
+prevPhoto.addEventListener(
+    "click",
+    showPreviousPhoto
+);
+
+
+/* =========================================
+   CLICK BACKGROUND TO CLOSE
+========================================= */
+
+photoLightbox.addEventListener(
+    "click",
+    (event) => {
+
+        /*
+            Hanya tutup jika yang diklik
+            adalah area background.
+
+            Jadi klik foto tidak menutup popup.
+        */
+
+        if (
+            event.target === photoLightbox
+        ) {
+
+            closePhoto();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   KEYBOARD CONTROL
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        /*
+            ESC
+        */
+
+        if (
+            event.key === "Escape" &&
+            photoLightbox.classList.contains("active")
+        ) {
+
+            closePhoto();
+
+        }
+
+
+        /*
+            Arrow Right
+        */
+
+        if (
+            event.key === "ArrowRight" &&
+            photoLightbox.classList.contains("active")
+        ) {
+
+            showNextPhoto();
+
+        }
+
+
+        /*
+            Arrow Left
+        */
+
+        if (
+            event.key === "ArrowLeft" &&
+            photoLightbox.classList.contains("active")
+        ) {
+
+            showPreviousPhoto();
+
+        }
+
+    }
+);
 
 
 /* =========================================
