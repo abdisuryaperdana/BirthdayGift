@@ -1,0 +1,1390 @@
+/* =========================================
+   GLOBAL
+========================================= */
+
+:root {
+
+    --pink: #e89aa8;
+    --dark-pink: #c86b7c;
+    --cream: #fff8ef;
+    --paper: #fffdf7;
+    --green: #809b78;
+    --dark: #493b3d;
+    --soft-pink: #f9dfe3;
+
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+
+    font-family: "Poppins", sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(255, 183, 197, 0.25),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 80% 70%,
+            rgba(255, 224, 160, 0.25),
+            transparent 25%
+        ),
+        var(--cream);
+
+    color: var(--dark);
+
+    overflow-x: hidden;
+
+}
+
+
+/* =========================================
+   OPENING SCREEN
+========================================= */
+
+.opening-screen {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at 30% 20%,
+            rgba(255, 184, 198, .35),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 80% 70%,
+            rgba(255, 217, 137, .3),
+            transparent 30%
+        ),
+        #fff8ef;
+
+    transition:
+        opacity 1s ease,
+        visibility 1s ease;
+
+}
+
+.opening-screen.hide {
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+}
+
+
+.opening-content {
+
+    max-width: 650px;
+
+    padding: 30px;
+
+    animation: openingAppear 1.5s ease;
+
+}
+
+.small-title {
+
+    font-size: 14px;
+
+    letter-spacing: 4px;
+
+    text-transform: uppercase;
+
+    color: var(--dark-pink);
+
+    margin-bottom: 25px;
+
+}
+
+
+.opening-content h1 {
+
+    font-family: "DM Serif Display", serif;
+
+    font-size: clamp(70px, 12vw, 150px);
+
+    line-height: .8;
+
+    color: var(--dark);
+
+    margin-bottom: 35px;
+
+}
+
+.opening-content h1 span {
+
+    color: var(--pink);
+
+}
+
+
+.opening-description {
+
+    font-size: 15px;
+
+    color: #766a6b;
+
+    margin-bottom: 35px;
+
+}
+
+
+.open-button {
+
+    border: none;
+
+    padding: 16px 30px;
+
+    border-radius: 50px;
+
+    background: var(--dark);
+
+    color: white;
+
+    font-family: "Poppins", sans-serif;
+
+    cursor: pointer;
+
+    transition: .3s;
+
+}
+
+.open-button:hover {
+
+    transform: translateY(-4px);
+
+    background: var(--dark-pink);
+
+    box-shadow:
+        0 15px 30px rgba(200, 107, 124, .25);
+
+}
+
+
+/* Opening flowers */
+
+.opening-flower {
+
+    position: absolute;
+
+    font-size: 100px;
+
+    opacity: .7;
+
+    animation: floatingFlower 5s ease-in-out infinite;
+
+}
+
+.flower-left {
+
+    left: 8%;
+
+    top: 15%;
+
+}
+
+.flower-right {
+
+    right: 8%;
+
+    bottom: 15%;
+
+    animation-delay: 1.5s;
+
+}
+
+
+/* =========================================
+   MAIN
+========================================= */
+
+.main-content {
+
+    position: relative;
+
+    min-height: 100vh;
+
+}
+
+
+/* =========================================
+   SECTIONS
+========================================= */
+
+.section {
+
+    position: relative;
+
+    min-height: 100vh;
+
+    padding:
+        100px
+        8%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+/* =========================================
+   HERO
+========================================= */
+
+.hero {
+
+    min-height: 100vh;
+
+    text-align: center;
+
+    background:
+
+        radial-gradient(
+            circle at 10% 90%,
+            rgba(238, 157, 174, .2),
+            transparent 25%
+        ),
+
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(255, 208, 124, .25),
+            transparent 25%
+        );
+
+}
+
+
+.hero-content {
+
+    max-width: 850px;
+
+}
+
+
+.eyebrow {
+
+    font-size: 11px;
+
+    letter-spacing: 4px;
+
+    text-transform: uppercase;
+
+    color: var(--dark-pink);
+
+    margin-bottom: 20px;
+
+}
+
+
+.hero h1 {
+
+    font-family: "DM Serif Display", serif;
+
+    font-size: clamp(55px, 9vw, 110px);
+
+    line-height: .95;
+
+    margin-bottom: 30px;
+
+}
+
+
+.hero h1 span {
+
+    color: var(--dark-pink);
+
+    font-style: italic;
+
+}
+
+
+.hero-text {
+
+    max-width: 620px;
+
+    margin: auto;
+
+    color: #74696a;
+
+    line-height: 1.9;
+
+}
+
+
+.flower-decoration {
+
+    position: absolute;
+
+    font-size: 150px;
+
+    opacity: .15;
+
+    animation: floatingFlower 6s ease-in-out infinite;
+
+}
+
+
+.hero-decoration {
+
+    top: 15%;
+
+    right: 5%;
+
+}
+
+
+/* scroll */
+
+.scroll-indicator {
+
+    margin-top: 80px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 3px;
+
+    opacity: .6;
+
+}
+
+
+.scroll-line {
+
+    height: 50px;
+
+    width: 1px;
+
+    background: var(--dark);
+
+}
+
+
+/* =========================================
+   PAPER NOTE
+========================================= */
+
+.note-section {
+
+    background:
+
+        linear-gradient(
+            rgba(255, 255, 255, .4),
+            rgba(255, 255, 255, .4)
+        ),
+
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 30px,
+            rgba(200, 107, 124, .04) 31px
+        );
+
+}
+
+
+.paper-note {
+
+    position: relative;
+
+    width: min(650px, 90%);
+
+    padding: 70px 60px;
+
+    background: var(--paper);
+
+    box-shadow:
+        0 20px 50px rgba(90, 55, 55, .12);
+
+    transform: rotate(-1.5deg);
+
+    font-family: "Poppins", sans-serif;
+
+    line-height: 2;
+
+}
+
+
+.paper-note::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 10px;
+
+    border: 1px solid rgba(200, 107, 124, .15);
+
+    pointer-events: none;
+
+}
+
+
+.paper-tape {
+
+    position: absolute;
+
+    width: 130px;
+
+    height: 35px;
+
+    top: -15px;
+
+    left: 50%;
+
+    transform: translateX(-50%) rotate(-2deg);
+
+    background: rgba(240, 202, 161, .65);
+
+}
+
+
+.note-flower {
+
+    position: absolute;
+
+    right: -40px;
+
+    top: -50px;
+
+    font-size: 80px;
+
+    transform: rotate(20deg);
+
+}
+
+
+.handwriting {
+
+    font-family: "Caveat", cursive;
+
+    font-size: 30px;
+
+}
+
+
+.signature {
+
+    margin-top: 35px;
+
+    text-align: right;
+
+    color: var(--dark-pink);
+
+}
+
+
+/* =========================================
+   ALBUM
+========================================= */
+
+.album-section {
+
+    flex-direction: column;
+
+    background:
+
+        radial-gradient(
+            circle at center,
+            rgba(255, 201, 211, .3),
+            transparent 50%
+        );
+
+}
+
+
+.section-heading {
+
+    text-align: center;
+
+    margin-bottom: 80px;
+
+}
+
+
+.section-heading h2 {
+
+    font-family: "DM Serif Display", serif;
+
+    font-size: clamp(50px, 7vw, 90px);
+
+    line-height: 1;
+
+    margin-bottom: 20px;
+
+}
+
+
+.section-heading h2 span {
+
+    color: var(--dark-pink);
+
+    font-style: italic;
+
+}
+
+
+.section-heading > p:last-child {
+
+    color: #75696a;
+
+}
+
+
+/* Photo collage */
+
+.photo-collage {
+
+    position: relative;
+
+    width: min(1000px, 90vw);
+
+    height: 700px;
+
+}
+
+
+.photo-card {
+
+    position: absolute;
+
+    width: 260px;
+
+    padding: 12px 12px 25px;
+
+    background: white;
+
+    box-shadow:
+        0 15px 30px rgba(50, 30, 30, .15);
+
+    transition:
+        transform .4s ease,
+        z-index .2s;
+
+}
+
+
+.photo-card img {
+
+    width: 100%;
+
+    height: 240px;
+
+    object-fit: cover;
+
+    display: block;
+
+    margin-bottom: 12px;
+
+}
+
+
+.photo-card span {
+
+    font-family: "Caveat", cursive;
+
+    font-size: 20px;
+
+    color: #65585a;
+
+}
+
+
+/* individual rotation */
+
+.photo-1 {
+
+    left: 8%;
+
+    top: 50px;
+
+    transform: rotate(-8deg);
+
+}
+
+.photo-2 {
+
+    left: 35%;
+
+    top: 20px;
+
+    transform: rotate(5deg);
+
+}
+
+.photo-3 {
+
+    right: 8%;
+
+    top: 80px;
+
+    transform: rotate(8deg);
+
+}
+
+.photo-4 {
+
+    left: 15%;
+
+    top: 330px;
+
+    transform: rotate(5deg);
+
+}
+
+.photo-5 {
+
+    left: 42%;
+
+    top: 300px;
+
+    transform: rotate(-6deg);
+
+}
+
+.photo-6 {
+
+    right: 10%;
+
+    top: 350px;
+
+    transform: rotate(7deg);
+
+}
+
+
+.photo-card:hover {
+
+    transform:
+        rotate(0deg)
+        scale(1.08);
+
+    z-index: 10;
+
+}
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+.message-section {
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(246, 218, 220, .6),
+            rgba(255, 248, 239, .8)
+        );
+
+}
+
+
+.message-container {
+
+    width: min(800px, 90%);
+
+    text-align: center;
+
+    position: relative;
+
+}
+
+
+.message-container h2 {
+
+    font-family: "DM Serif Display", serif;
+
+    font-size: clamp(55px, 8vw, 100px);
+
+    line-height: .9;
+
+    margin-bottom: 60px;
+
+}
+
+
+.message-container h2 span {
+
+    color: var(--dark-pink);
+
+    font-style: italic;
+
+}
+
+
+.message-flower {
+
+    position: absolute;
+
+    font-size: 100px;
+
+    right: -30px;
+
+    top: -100px;
+
+    opacity: .7;
+
+}
+
+
+.message-paper {
+
+    background: rgba(255, 255, 255, .8);
+
+    padding: 60px;
+
+    box-shadow:
+        0 15px 50px rgba(100, 50, 50, .08);
+
+    text-align: left;
+
+    line-height: 2;
+
+}
+
+
+.message-paper p {
+
+    margin-bottom: 25px;
+
+}
+
+
+.highlight-message {
+
+    font-family: "Caveat", cursive;
+
+    font-size: 34px;
+
+    color: var(--dark-pink);
+
+    text-align: center;
+
+}
+
+
+/* =========================================
+   VOICE
+========================================= */
+
+.voice-section {
+
+    background:
+
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(242, 184, 193, .3),
+            transparent 45%
+        );
+
+}
+
+
+.voice-card {
+
+    width: min(600px, 90%);
+
+    text-align: center;
+
+    padding: 70px 50px;
+
+    background: rgba(255, 255, 255, .7);
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 20px 60px rgba(80, 40, 40, .1);
+
+    border-radius: 10px;
+
+}
+
+
+.voice-flower {
+
+    font-size: 70px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.voice-card h2 {
+
+    font-family: "DM Serif Display", serif;
+
+    font-size: 70px;
+
+    line-height: 1;
+
+    margin-bottom: 25px;
+
+}
+
+
+.voice-card h2 span {
+
+    color: var(--dark-pink);
+
+    font-style: italic;
+
+}
+
+
+.voice-card > p:not(.eyebrow) {
+
+    color: #75696a;
+
+    margin-bottom: 35px;
+
+}
+
+
+.voice-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 17px 30px;
+
+    border: none;
+
+    border-radius: 50px;
+
+    background: var(--dark);
+
+    color: white;
+
+    cursor: pointer;
+
+    font-family: "Poppins", sans-serif;
+
+    transition: .3s;
+
+}
+
+
+.voice-button:hover {
+
+    background: var(--dark-pink);
+
+    transform: translateY(-3px);
+
+}
+
+
+.voice-progress {
+
+    width: 100%;
+
+    height: 4px;
+
+    margin-top: 30px;
+
+    background: #eadedf;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+}
+
+
+.voice-progress div {
+
+    height: 100%;
+
+    width: 0%;
+
+    background: var(--dark-pink);
+
+    transition: width .1s linear;
+
+}
+
+
+/* =========================================
+   FINAL
+========================================= */
+
+.final-section {
+
+    min-height: 80vh;
+
+    flex-direction: column;
+
+    text-align: center;
+
+}
+
+
+.final-flowers {
+
+    font-size: 45px;
+
+    letter-spacing: 10px;
+
+    margin-bottom: 50px;
+
+    animation: flowerDance 5s ease-in-out infinite;
+
+}
+
+
+.final-section h2 {
+
+    font-family: "Caveat", cursive;
+
+    font-size: 50px;
+
+    color: var(--dark-pink);
+
+}
+
+
+.final-section h1 {
+
+    font-family: "DM Serif Display", serif;
+
+    font-size: clamp(60px, 9vw, 120px);
+
+    margin: 15px 0;
+
+}
+
+
+.final-section > p {
+
+    color: #75696a;
+
+}
+
+
+.heart {
+
+    font-size: 80px;
+
+    color: var(--dark-pink);
+
+    margin: 40px 0;
+
+    animation: heartbeat 1.5s infinite;
+
+}
+
+
+.final-small {
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
+
+}
+
+
+/* =========================================
+   MUSIC BUTTON
+========================================= */
+
+.music-button {
+
+    position: fixed;
+
+    right: 25px;
+
+    bottom: 25px;
+
+    z-index: 100;
+
+    width: 50px;
+
+    height: 50px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: var(--dark);
+
+    color: white;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.15);
+
+    transition: .3s;
+
+}
+
+
+.music-button:hover {
+
+    transform: scale(1.1);
+
+}
+
+
+/* =========================================
+   FLOATING FLOWERS
+========================================= */
+
+.floating-flowers {
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    overflow: hidden;
+
+    z-index: 5;
+
+}
+
+
+.floating {
+
+    position: absolute;
+
+    opacity: .5;
+
+    animation:
+        flowerFloat 12s linear infinite;
+
+}
+
+
+.flower-1 {
+
+    left: 5%;
+
+    font-size: 25px;
+
+    animation-duration: 15s;
+
+}
+
+
+.flower-2 {
+
+    left: 20%;
+
+    font-size: 20px;
+
+    animation-duration: 18s;
+
+    animation-delay: 2s;
+
+}
+
+
+.flower-3 {
+
+    left: 40%;
+
+    font-size: 30px;
+
+    animation-duration: 20s;
+
+    animation-delay: 4s;
+
+}
+
+
+.flower-4 {
+
+    left: 60%;
+
+    font-size: 25px;
+
+    animation-duration: 16s;
+
+}
+
+
+.flower-5 {
+
+    left: 80%;
+
+    font-size: 30px;
+
+    animation-duration: 19s;
+
+    animation-delay: 3s;
+
+}
+
+
+.flower-6 {
+
+    left: 92%;
+
+    font-size: 20px;
+
+    animation-duration: 14s;
+
+}
+
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+
+@keyframes openingAppear {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(30px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+
+@keyframes floatingFlower {
+
+    0%, 100% {
+
+        transform:
+            translateY(0)
+            rotate(0deg);
+
+    }
+
+    50% {
+
+        transform:
+            translateY(-25px)
+            rotate(10deg);
+
+    }
+
+}
+
+
+@keyframes flowerFloat {
+
+    0% {
+
+        transform:
+            translateY(110vh)
+            rotate(0deg);
+
+    }
+
+    100% {
+
+        transform:
+            translateY(-120px)
+            rotate(360deg);
+
+    }
+
+}
+
+
+@keyframes flowerDance {
+
+    0%, 100% {
+
+        transform:
+            translateY(0)
+            rotate(-2deg);
+
+    }
+
+    50% {
+
+        transform:
+            translateY(-10px)
+            rotate(2deg);
+
+    }
+
+}
+
+
+@keyframes heartbeat {
+
+    0%, 100% {
+
+        transform: scale(1);
+
+    }
+
+    15% {
+
+        transform: scale(1.15);
+
+    }
+
+    30% {
+
+        transform: scale(1);
+
+    }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+    .section {
+
+        padding:
+            80px 20px;
+
+    }
+
+
+    .opening-flower {
+
+        font-size: 60px;
+
+    }
+
+
+    .paper-note {
+
+        padding: 50px 30px;
+
+    }
+
+
+    .photo-collage {
+
+        width: 100%;
+
+        height: auto;
+
+        display: grid;
+
+        grid-template-columns: 1fr 1fr;
+
+        gap: 20px;
+
+    }
+
+
+    .photo-card {
+
+        position: relative;
+
+        width: 100%;
+
+        top: auto !important;
+
+        left: auto !important;
+
+        right: auto !important;
+
+    }
+
+
+    .photo-card img {
+
+        height: 180px;
+
+    }
+
+
+    .photo-1,
+    .photo-2,
+    .photo-3,
+    .photo-4,
+    .photo-5,
+    .photo-6 {
+
+        transform: rotate(0deg);
+
+    }
+
+
+    .message-paper {
+
+        padding: 35px 25px;
+
+    }
+
+
+    .voice-card {
+
+        padding: 50px 25px;
+
+    }
+
+
+    .voice-card h2 {
+
+        font-size: 55px;
+
+    }
+
+
+    .final-flowers {
+
+        font-size: 30px;
+
+        letter-spacing: 4px;
+
+    }
+
+}
