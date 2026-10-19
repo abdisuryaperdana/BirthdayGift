@@ -362,6 +362,71 @@
         </section>
 
 
+
+
+        <!-- =====================================
+             LITTLE PHOTOBOOTH
+        ====================================== -->
+        <section class="section photobooth-section" id="photobooth">
+            <div class="photobooth-wrap">
+                <div class="section-heading photobooth-heading">
+                    <p class="eyebrow">ONE MORE MEMORY</p>
+                    <h2>Our Little <span>Photobooth</span></h2>
+                    <p>Three little moments, one memory to keep. ♡</p>
+                </div>
+
+                <div class="photobooth-card">
+                    <div class="pb-camera-panel">
+                        <div class="pb-camera-topline">
+                            <span class="pb-live-dot"></span>
+                            <span id="pbCameraStatus">Camera is waiting</span>
+                        </div>
+                        <div class="pb-video-wrap">
+                            <video id="pbVideo" autoplay playsinline muted></video>
+                            <div id="pbCameraPlaceholder" class="pb-camera-placeholder">
+                                <span>📸</span>
+                                <p>Your next favorite memory starts here.</p>
+                                <small>Allow camera access when your browser asks.</small>
+                            </div>
+                            <div id="pbCountdown" class="pb-countdown" aria-live="polite"></div>
+                        </div>
+                        <p class="pb-camera-note">For the best result, face the camera and find a little light. 🌷</p>
+                        <div class="pb-controls">
+                            <button type="button" id="pbStartCamera" class="pb-button pb-button-secondary">Open Camera</button>
+                            <button type="button" id="pbStartSession" class="pb-button" disabled>Take 3 Photos ✨</button>
+                        </div>
+                        <p id="pbStatus" class="pb-status" aria-live="polite">Open your camera to get started.</p>
+                    </div>
+
+                    <div class="pb-result-panel">
+                        <div class="pb-result-title">
+                            <div>
+                                <p class="eyebrow">YOUR PHOTO STRIP</p>
+                                <h3>A little piece of us</h3>
+                            </div>
+                            <span class="pb-photo-count" id="pbPhotoCount">0 / 3</span>
+                        </div>
+                        <div class="pb-strip-stage">
+                            <div class="pb-strip" id="pbStrip">
+                                <div class="pb-strip-brand">little moments ♡</div>
+                                <div class="pb-photo-slot"><span>01</span><small>your smile goes here</small></div>
+                                <div class="pb-photo-slot"><span>02</span><small>and another one</small></div>
+                                <div class="pb-photo-slot"><span>03</span><small>one to remember</small></div>
+                                <div class="pb-strip-footer">made with love 🌸</div>
+                            </div>
+                        </div>
+                        <div class="pb-result-actions">
+                            <button type="button" id="pbRetake" class="pb-button pb-button-secondary" disabled>Retake All</button>
+                            <button type="button" id="pbDownload" class="pb-button" disabled>Download Photo</button>
+                        </div>
+                        <p id="pbDriveStatus" class="pb-drive-status" aria-live="polite">When configured, Download Photo will also save a copy to Google Drive automatically.</p>
+                    </div>
+                </div>
+                <p class="pb-privacy-note">Your camera stays on this device. When you click “Download Photo”, the finished photo strip downloads to your device and is also sent to Google Drive when auto-save is configured.</p>
+            </div>
+        </section>
+
+
         <!-- =====================================
              FINAL MESSAGE
         ====================================== -->
