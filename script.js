@@ -1,191 +1,106 @@
 /* =========================================
    ELEMENTS
 ========================================= */
+const openingScreen = document.getElementById("openingScreen");
+const openButton = document.getElementById("openButton");
+const backgroundMusic = document.getElementById("backgroundMusic");
+const musicButton = document.getElementById("musicButton");
+const musicIcon = document.getElementById("musicIcon");
 
-const openingScreen =
-    document.getElementById("openingScreen");
+const BACKGROUND_VOLUME = 0.35;
+const DUCKED_MUSIC_VOLUME = 0.10;
 
-const openButton =
-    document.getElementById("openButton");
+const voiceNotes = [
+    { audio: document.getElementById("voiceNote1"), button: document.getElementById("voiceButton1"),
+      icon: document.getElementById("voiceIcon1"), text: document.getElementById("voiceText1"),
+      progress: document.getElementById("voiceProgress1"), label: "Play Voice Note 1" },
+    { audio: document.getElementById("voiceNote2"), button: document.getElementById("voiceButton2"),
+      icon: document.getElementById("voiceIcon2"), text: document.getElementById("voiceText2"),
+      progress: document.getElementById("voiceProgress2"), label: "Play Voice Note 2" }
+];
 
-const backgroundMusic =
-    document.getElementById("backgroundMusic");
-
-const musicButton =
-    document.getElementById("musicButton");
-
-const musicIcon =
-    document.getElementById("musicIcon");
-
-const voiceNote =
-    document.getElementById("voiceNote");
-
-const voiceButton =
-    document.getElementById("voiceButton");
-
-const voiceIcon =
-    document.getElementById("voiceIcon");
-
-const voiceText =
-    document.getElementById("voiceText");
-
-const voiceProgress =
-    document.getElementById("voiceProgress");
-
+function anyVoiceNotePlaying() {
+    return voiceNotes.some(note => note.audio && !note.audio.paused && !note.audio.ended);
+}
+function updateBackgroundVolume() {
+    backgroundMusic.volume = anyVoiceNotePlaying() ? DUCKED_MUSIC_VOLUME : BACKGROUND_VOLUME;
+}
+function updateVoiceNoteUI(note, isPlaying) {
+    note.icon.textContent = isPlaying ? "Ⅱ" : "▶";
+    note.text.textContent = isPlaying ? `Pause ${note.label.replace("Play ", "")}` : note.label;
+}
+function resetVoiceNote(note) {
+    note.audio.pause();
+    note.audio.currentTime = 0;
+    note.progress.style.width = "0%";
+    updateVoiceNoteUI(note, false);
+}
 
 /* =========================================
    OPEN WEBSITE
 ========================================= */
-
 openButton.addEventListener("click", () => {
-
     openingScreen.classList.add("hide");
-
-    /*
-        Browser biasanya mengizinkan audio
-        setelah user melakukan interaction.
-
-        Karena tombol ini diklik user,
-        kita bisa menjalankan background music.
-    */
-
-    backgroundMusic.volume = 0.35;
-
+    updateBackgroundVolume();
     backgroundMusic.play()
-        .then(() => {
-
-            musicIcon.textContent = "♫";
-
-        })
-        .catch((error) => {
-
-            console.log(
-                "Music tidak dapat dimainkan:",
-                error
-            );
-
-        });
-
+        .then(() => { musicIcon.textContent = "♫"; })
+        .catch(error => console.log("Music tidak dapat dimainkan:", error));
 });
-
 
 /* =========================================
    BACKGROUND MUSIC CONTROL
 ========================================= */
-
-let musicPlaying = false;
-
-
 musicButton.addEventListener("click", () => {
-
-    if (musicPlaying) {
-
+    if (backgroundMusic.paused) {
+        updateBackgroundVolume();
+        backgroundMusic.play().catch(error => console.log("Music tidak dapat dimainkan:", error));
+    } else {
         backgroundMusic.pause();
-
-        musicPlaying = false;
-
-        musicIcon.textContent = "🔇";
-
-    } else {
-
-        backgroundMusic.play();
-
-        musicPlaying = true;
-
-        musicIcon.textContent = "♫";
-
     }
-
 });
-
-
 backgroundMusic.addEventListener("play", () => {
-
-    musicPlaying = true;
-
     musicIcon.textContent = "♫";
-
+    updateBackgroundVolume();
 });
-
-
-backgroundMusic.addEventListener("pause", () => {
-
-    musicPlaying = false;
-
-    musicIcon.textContent = "🔇";
-
-});
-
+backgroundMusic.addEventListener("pause", () => { musicIcon.textContent = "🔇"; });
 
 /* =========================================
-   VOICE NOTE
+   TWO VOICE NOTES
 ========================================= */
-
-let voicePlaying = false;
-
-
-voiceButton.addEventListener("click", () => {
-
-    if (voicePlaying) {
-
-        voiceNote.pause();
-
-        voicePlaying = false;
-
-        voiceIcon.textContent = "▶";
-
-        voiceText.textContent = "Play Voice Note";
-
-    } else {
-
-        voiceNote.play();
-
-        voicePlaying = true;
-
-        voiceIcon.textContent = "Ⅱ";
-
-        voiceText.textContent = "Pause Voice Note";
-
-    }
-
+voiceNotes.forEach(note => {
+    if (!note.audio || !note.button) return;
+    note.button.addEventListener("click", async () => {
+        if (!note.audio.paused && !note.audio.ended) {
+            note.audio.pause();
+            return;
+        }
+        voiceNotes.forEach(other => { if (other !== note) resetVoiceNote(other); });
+        try {
+            await note.audio.play();
+        } catch (error) {
+            console.error("Voice note tidak dapat dimainkan:", error);
+            updateVoiceNoteUI(note, false);
+        }
+    });
+    note.audio.addEventListener("play", () => {
+        updateVoiceNoteUI(note, true);
+        updateBackgroundVolume();
+    });
+    note.audio.addEventListener("pause", () => {
+        updateVoiceNoteUI(note, false);
+        updateBackgroundVolume();
+    });
+    note.audio.addEventListener("ended", () => {
+        note.progress.style.width = "0%";
+        updateVoiceNoteUI(note, false);
+        updateBackgroundVolume();
+    });
+    note.audio.addEventListener("timeupdate", () => {
+        if (note.audio.duration) {
+            note.progress.style.width = `${note.audio.currentTime / note.audio.duration * 100}%`;
+        }
+    });
 });
-
-
-/* =========================================
-   VOICE PROGRESS
-========================================= */
-
-voiceNote.addEventListener("timeupdate", () => {
-
-    if (!voiceNote.duration) {
-        return;
-    }
-
-    const progress =
-        (voiceNote.currentTime / voiceNote.duration) * 100;
-
-    voiceProgress.style.width =
-        `${progress}%`;
-
-});
-
-
-/* =========================================
-   VOICE NOTE ENDED
-========================================= */
-
-voiceNote.addEventListener("ended", () => {
-
-    voicePlaying = false;
-
-    voiceIcon.textContent = "▶";
-
-    voiceText.textContent = "Play Voice Note";
-
-    voiceProgress.style.width = "0%";
-
-});
-
 
 /* =========================================
    PHOTO LIGHTBOX
@@ -714,59 +629,137 @@ document.addEventListener(
         }
     }
 
+    
     function makePhotoStrip() {
         return new Promise((resolve, reject) => {
             const canvas = document.createElement("canvas");
             const ctx = canvas.getContext("2d");
+
             const width = 900;
-            const photoHeight = 675;
             const margin = 42;
+            const photoHeight = 675;
             const gap = 24;
-            const header = 105;
-            const footer = 85;
+            const header = 155;
+            const footer = 95;
+            const photoWidth = width - margin * 2;
+
             canvas.width = width;
-            canvas.height = margin + header + (photoHeight * 3) + (gap * 2) + footer + margin;
+            canvas.height =
+                margin + header +
+                (photoHeight * 3) +
+                (gap * 2) + footer + margin;
 
-            ctx.fillStyle = "#fffdf8";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#493b3d";
+            // Background burgundy
+            const gradient = ctx.createLinearGradient(0, 0, width, canvas.height);
+            gradient.addColorStop(0, "#9b3152");
+            gradient.addColorStop(0.5, "#761b3b");
+            gradient.addColorStop(1, "#511126");
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, canvas.height);
+
+            // Bingkai emas di bagian luar
+            ctx.strokeStyle = "#e9bb79";
+            ctx.lineWidth = 8;
+            ctx.strokeRect(14, 14, width - 28, canvas.height - 28);
+
+            // Garis putus-putus dekoratif
+            ctx.save();
+            ctx.strokeStyle = "#f5d8a8";
+            ctx.lineWidth = 2;
+            ctx.setLineDash([8, 9]);
+            ctx.strokeRect(28, 28, width - 56, canvas.height - 56);
+            ctx.restore();
+
+            // Header dekoratif
             ctx.textAlign = "center";
-            ctx.font = "bold 44px Georgia, serif";
-            ctx.fillText("little moments ♡", width / 2, margin + 42);
-            ctx.fillStyle = "#c86b7c";
-            ctx.font = "22px Arial, sans-serif";
-            ctx.fillText("A MEMORY TO KEEP", width / 2, margin + 77);
+            ctx.textBaseline = "alphabetic";
 
-            const imagePromises = photos.map(src => new Promise((res, rej) => {
-                const img = new Image();
-                img.onload = () => res(img);
-                img.onerror = rej;
-                img.src = src;
-            }));
-            Promise.all(imagePromises).then(images => {
-                let y = margin + header;
-                images.forEach(img => {
-                    const targetRatio = width - margin * 2;
-                    const ratio = Math.max(targetRatio / img.width, photoHeight / img.height);
-                    const drawWidth = img.width * ratio;
-                    const drawHeight = img.height * ratio;
-                    const sx = (drawWidth - targetRatio) / 2 / ratio;
-                    const sy = (drawHeight - photoHeight) / 2 / ratio;
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.rect(margin, y, targetRatio, photoHeight);
-                    ctx.clip();
-                    ctx.drawImage(img, sx, sy, targetRatio / ratio, photoHeight / ratio, margin, y, targetRatio, photoHeight);
-                    ctx.restore();
-                    y += photoHeight + gap;
-                });
-                ctx.fillStyle = "#493b3d";
-                ctx.font = "30px Georgia, serif";
-                ctx.fillText("made with love  •  🌸", width / 2, canvas.height - margin - 22);
-                resolve(canvas);
-            }).catch(reject);
+            ctx.fillStyle = "#ffdda0";
+            ctx.font = "bold 24px Arial, sans-serif";
+            ctx.fillText("✦  A SPECIAL DAY  ✦", width / 2, margin + 28);
+
+            ctx.fillStyle = "#fff1cf";
+            ctx.font = "bold 76px cursive";
+            ctx.fillText("birthday party!", width / 2, margin + 100);
+
+            ctx.fillStyle = "#ffd9df";
+            ctx.font = "34px cursive";
+            ctx.fillText(
+                "little moments, big memories ♡",
+                width / 2,
+                margin + 143
+            );
+
+            // Ilustrasi pesta
+            ctx.font = "55px sans-serif";
+            ctx.textAlign = "left";
+            ctx.fillText("🎉", margin + 8, margin + 90);
+
+            ctx.textAlign = "right";
+            ctx.fillText("🎂", width - margin - 8, margin + 145);
+
+            const imagePromises = photos.map(src =>
+                new Promise((res, rej) => {
+                    const img = new Image();
+                    img.onload = () => res(img);
+                    img.onerror = rej;
+                    img.src = src;
+                })
+            );
+
+            Promise.all(imagePromises)
+                .then(images => {
+                    let y = margin + header;
+
+                    images.forEach(img => {
+                        // Bingkai krem di setiap foto
+                        ctx.fillStyle = "#fff0d6";
+                        ctx.fillRect(
+                            margin - 4,
+                            y - 4,
+                            photoWidth + 8,
+                            photoHeight + 8
+                        );
+
+                        // Crop foto agar memenuhi area
+                        const scale = Math.max(
+                            photoWidth / img.width,
+                            photoHeight / img.height
+                        );
+
+                        const sourceWidth = photoWidth / scale;
+                        const sourceHeight = photoHeight / scale;
+                        const sx = (img.width - sourceWidth) / 2;
+                        const sy = (img.height - sourceHeight) / 2;
+
+                        ctx.drawImage(
+                            img,
+                            sx, sy,
+                            sourceWidth, sourceHeight,
+                            margin, y,
+                            photoWidth, photoHeight
+                        );
+
+                        y += photoHeight + gap;
+                    });
+
+                    // Footer
+                    ctx.textAlign = "center";
+                    ctx.fillStyle = "#ffe3a9";
+                    ctx.font = "42px cursive";
+                    ctx.fillText(
+                        "✦ made with love ♡ ✦",
+                        width / 2,
+                        canvas.height - margin - 20
+                    );
+
+                    resolve(canvas);
+                })
+                .catch(reject);
         });
     }
+
 
     async function downloadPhoto() {
         if (photos.length !== 3) return;

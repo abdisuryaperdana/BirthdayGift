@@ -24,8 +24,11 @@
         <source src="assets/dancingqueen.mp3" type="audio/mpeg">
     </audio>
 
-    <audio id="voiceNote">
-        <source src="assets/voice-note.mp3" type="audio/mpeg">
+    <audio id="voiceNote1" preload="metadata">
+        <source src="assets/voice_note.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="voiceNote2" preload="metadata">
+        <source src="assets/voice_note.mp3" type="audio/mpeg">
     </audio>
 
 
@@ -316,52 +319,37 @@
 
 
         <!-- =====================================
-             VOICE NOTE
+             VOICE NOTES
         ====================================== -->
-
         <section class="section voice-section">
-
             <div class="voice-card">
-
-                <div class="voice-flower">
-                    🌸
+                <div class="voice-flower">🌸</div>
+                <h2>Listen to <span>these.</span></h2>
+                <p class="voice-intro">Ada beberapa hal yang rasanya lebih baik disampaikan lewat suara.</p>
+                <div class="voice-note-list">
+                    <article class="voice-note-item">
+                        <img class="voice-note-photo" src="assets/ecaa.jpg" alt="Foto untuk voice note pertama">
+                        <div class="voice-note-content">
+                            <p class="voice-note-label">A little message · 01</p>
+                            <button type="button" id="voiceButton1" class="voice-button voice-note-button">
+                                <span id="voiceIcon1" aria-hidden="true">▶</span><span id="voiceText1">Play Voice Note 1</span>
+                            </button>
+                            <div class="voice-progress"><div id="voiceProgress1"></div></div>
+                        </div>
+                    </article>
+                    <article class="voice-note-item">
+                        <img class="voice-note-photo" src="assets/abdi.jpg" alt="Foto untuk voice note kedua">
+                        <div class="voice-note-content">
+                            <p class="voice-note-label">From the heart · 02</p>
+                            <button type="button" id="voiceButton2" class="voice-button voice-note-button">
+                                <span id="voiceIcon2" aria-hidden="true">▶</span><span id="voiceText2">Play Voice Note 2</span>
+                            </button>
+                            <div class="voice-progress"><div id="voiceProgress2"></div></div>
+                        </div>
+                    </article>
                 </div>
-
-                <p class="eyebrow">
-                    ONE MORE THING
-                </p>
-
-                <h2>
-                    Listen to
-                    <span>this.</span>
-                </h2>
-
-                <p>
-                    Ada sesuatu yang rasanya lebih baik
-                    disampaikan lewat suara.
-                </p>
-
-                <button id="voiceButton" class="voice-button">
-
-                    <span id="voiceIcon">
-                        ▶
-                    </span>
-
-                    <span id="voiceText">
-                        Play Voice Note
-                    </span>
-
-                </button>
-
-                <div class="voice-progress">
-                    <div id="voiceProgress"></div>
-                </div>
-
             </div>
-
         </section>
-
-
 
 
         <!-- =====================================
@@ -371,11 +359,18 @@
             <div class="photobooth-wrap">
                 <div class="section-heading photobooth-heading">
                     <p class="eyebrow">ONE MORE MEMORY</p>
-                    <h2>Our Little <span>Photobooth</span></h2>
+                    <h2>Little <span>Photobooth</span></h2>
                     <p>Three little moments, one memory to keep. ♡</p>
                 </div>
 
                 <div class="photobooth-card">
+                    <!-- Dekorasi khusus card photobooth -->
+                    <div class="pb-card-doodle pb-doodle-hat" aria-hidden="true">🎉</div>
+                    <div class="pb-card-doodle pb-doodle-cake" aria-hidden="true">🎂</div>
+                    <div class="pb-card-birthday" aria-hidden="true">birthday<br>party!</div>
+                    <span class="pb-card-spark pb-spark-one" aria-hidden="true">✦</span>
+                    <span class="pb-card-spark pb-spark-two" aria-hidden="true">♡</span>
+
                     <div class="pb-camera-panel">
                         <div class="pb-camera-topline">
                             <span class="pb-live-dot"></span>
@@ -402,27 +397,50 @@
                         <div class="pb-result-title">
                             <div>
                                 <p class="eyebrow">YOUR PHOTO STRIP</p>
-                                <h3>A little piece of us</h3>
+                                <h3>A little piece of you</h3>
                             </div>
                             <span class="pb-photo-count" id="pbPhotoCount">0 / 3</span>
                         </div>
                         <div class="pb-strip-stage">
-                            <div class="pb-strip" id="pbStrip">
-                                <div class="pb-strip-brand">little moments ♡</div>
-                                <div class="pb-photo-slot"><span>01</span><small>your smile goes here</small></div>
-                                <div class="pb-photo-slot"><span>02</span><small>and another one</small></div>
-                                <div class="pb-photo-slot"><span>03</span><small>one to remember</small></div>
-                                <div class="pb-strip-footer">made with love 🌸</div>
+                                <div class="pb-strip" id="pbStrip">
+                                    <div class="pb-strip-decoration pb-hat" aria-hidden="true">🎉</div>
+                                    <div class="pb-strip-decoration pb-cake" aria-hidden="true">🎂</div>
+
+                                    <div class="pb-strip-header">
+                                        <span class="pb-strip-small">✦ A SPECIAL DAY ✦</span>
+                                        <div class="pb-strip-brand">birthday party!</div>
+                                        <span class="pb-strip-subtitle">little moments, big memories ♡</span>
+                                    </div>
+
+                                    <div class="pb-photo-slot">
+                                        <span>01</span>
+                                        <small>your smile goes here</small>
+                                    </div>
+
+                                    <div class="pb-photo-slot">
+                                        <span>02</span>
+                                        <small>and another one</small>
+                                    </div>
+
+                                    <div class="pb-photo-slot">
+                                        <span>03</span>
+                                        <small>one to remember</small>
+                                    </div>
+
+                                    <div class="pb-strip-footer">
+                                        <span class="pb-footer-sparkle">✦</span>
+                                        made with love
+                                        <span class="pb-footer-heart">♡</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="pb-result-actions">
                             <button type="button" id="pbRetake" class="pb-button pb-button-secondary" disabled>Retake All</button>
                             <button type="button" id="pbDownload" class="pb-button" disabled>Download Photo</button>
                         </div>
-                        <p id="pbDriveStatus" class="pb-drive-status" aria-live="polite">When configured, Download Photo will also save a copy to Google Drive automatically.</p>
                     </div>
                 </div>
-                <p class="pb-privacy-note">Your camera stays on this device. When you click “Download Photo”, the finished photo strip downloads to your device and is also sent to Google Drive when auto-save is configured.</p>
             </div>
         </section>
 
