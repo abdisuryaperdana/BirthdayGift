@@ -929,17 +929,17 @@ async function downloadPhoto() {
 
         // 1. Upload terlebih dahulu ke Google Drive
         if (GOOGLE_DRIVE_WEB_APP_URL) {
-            setDriveStatus("Sending photo to Google Drive...");
+            setDriveStatus("Processing photo...");
 
             try {
                 await uploadCanvasToDrive(canvas);
                 setDriveStatus(
-                    "Upload request completed. Please check Google Drive."
+                    "Upload request completed. Please check your devices."
                 );
             } catch (uploadError) {
                 console.error("Google Drive upload error:", uploadError);
                 setDriveStatus(
-                    "Google Drive upload failed. Please try again."
+                    "Process failed. Please try again."
                 );
             }
         }
