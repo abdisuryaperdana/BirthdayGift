@@ -7,100 +7,256 @@ const backgroundMusic = document.getElementById("backgroundMusic");
 const musicButton = document.getElementById("musicButton");
 const musicIcon = document.getElementById("musicIcon");
 
-const BACKGROUND_VOLUME = 0.35;
-const DUCKED_MUSIC_VOLUME = 0.10;
 
+const BACKGROUND_VOLUME = 0.35;
+const DUCKED_MUSIC_VOLUME = 0.07;
+
+// Daftar voice note
 const voiceNotes = [
-    { audio: document.getElementById("voiceNote1"), button: document.getElementById("voiceButton1"),
-      icon: document.getElementById("voiceIcon1"), text: document.getElementById("voiceText1"),
-      progress: document.getElementById("voiceProgress1"), label: "Play Voice Note 1" },
-    { audio: document.getElementById("voiceNote2"), button: document.getElementById("voiceButton2"),
-      icon: document.getElementById("voiceIcon2"), text: document.getElementById("voiceText2"),
-      progress: document.getElementById("voiceProgress2"), label: "Play Voice Note 2" }
+    {
+        audio: document.getElementById("voiceNote1"),
+        button: document.getElementById("voiceButton1"),
+        icon: document.getElementById("voiceIcon1"),
+        text: document.getElementById("voiceText1"),
+        progress: document.getElementById("voiceProgress1"),
+        label: "Play Voice Note 1"
+    },
+    {
+        audio: document.getElementById("voiceNote2"),
+        button: document.getElementById("voiceButton2"),
+        icon: document.getElementById("voiceIcon2"),
+        text: document.getElementById("voiceText2"),
+        progress: document.getElementById("voiceProgress2"),
+        label: "Play Voice Note 2"
+    }
 ];
 
+// Web Audio API
+let audioContext = null;
+let backgroundGain = null;
+
+function setupAudioGraph() {
+    if (audioContext) return;
+
+    const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) {
+        console.warn("Web Audio API tidak tersedia.");
+        return;
+    }
+
+    audioContext = new AudioContextClass();
+
+    // Jalur background music
+    const backgroundSource =
+        audioContext.createMediaElementSource(backgroundMusic);
+
+    backgroundGain = audioContext.createGain();
+    backgroundGain.gain.value = BACKGROUND_VOLUME;
+
+    backgroundSource.connect(backgroundGain);
+    backgroundGain.connect(audioContext.destination);
+
+    // Jalur voice notes
+    voiceNotes.forEach(note => {
+        if (!note.audio) return;
+
+        const voiceSource =
+            audioContext.createMediaElementSource(note.audio);
+
+        voiceSource.connect(audioContext.destination);
+    });
+}
+
+function resumeAudioContext() {
+    setupAudioGraph();
+
+    if (audioContext && audioContext.state === "suspended") {
+        return audioContext.resume();
+    }
+
+    return Promise.resolve();
+}
+
 function anyVoiceNotePlaying() {
-    return voiceNotes.some(note => note.audio && !note.audio.paused && !note.audio.ended);
+    return voiceNotes.some(note =>
+        note.audio &&
+        !note.audio.paused &&
+        !note.audio.ended
+    );
 }
+
 function updateBackgroundVolume() {
-    backgroundMusic.volume = anyVoiceNotePlaying() ? DUCKED_MUSIC_VOLUME : BACKGROUND_VOLUME;
+    const targetVolume = anyVoiceNotePlaying()
+        ? DUCKED_MUSIC_VOLUME
+        : BACKGROUND_VOLUME;
+
+    if (backgroundGain && audioContext) {
+        // Perubahan volume lebih halus
+        backgroundGain.gain.cancelScheduledValues(
+            audioContext.currentTime
+        );
+
+        backgroundGain.gain.setTargetAtTime(
+            targetVolume,
+            audioContext.currentTime,
+            0.15
+        );
+    } else {
+        // Fallback jika Web Audio API tidak tersedia
+        backgroundMusic.volume = targetVolume;
+    }
 }
+
 function updateVoiceNoteUI(note, isPlaying) {
     note.icon.textContent = isPlaying ? "Ⅱ" : "▶";
-    note.text.textContent = isPlaying ? `Pause ${note.label.replace("Play ", "")}` : note.label;
+
+    note.text.textContent = isPlaying
+        ? `Pause ${note.label.replace("Play ", "")}`
+        : note.label;
 }
+
 function resetVoiceNote(note) {
     note.audio.pause();
     note.audio.currentTime = 0;
     note.progress.style.width = "0%";
+
     updateVoiceNoteUI(note, false);
 }
 
 /* =========================================
    OPEN WEBSITE
 ========================================= */
-openButton.addEventListener("click", () => {
+
+openButton.addEventListener("click", async () => {
     openingScreen.classList.add("hide");
-    updateBackgroundVolume();
-    backgroundMusic.play()
-        .then(() => { musicIcon.textContent = "♫"; })
-        .catch(error => console.log("Music tidak dapat dimainkan:", error));
+
+    try {
+        // Mulai audio context dari interaksi pengguna
+        const resumePromise = resumeAudioContext();
+
+        updateBackgroundVolume();
+
+        const playPromise = backgroundMusic.play();
+
+        await Promise.all([
+            resumePromise,
+            playPromise
+        ]);
+
+        musicIcon.textContent = "♫";
+
+    } catch (error) {
+        console.error("Music tidak dapat dimainkan:", error);
+    }
 });
 
 /* =========================================
    BACKGROUND MUSIC CONTROL
 ========================================= */
-musicButton.addEventListener("click", () => {
+
+musicButton.addEventListener("click", async () => {
     if (backgroundMusic.paused) {
-        updateBackgroundVolume();
-        backgroundMusic.play().catch(error => console.log("Music tidak dapat dimainkan:", error));
+        try {
+            const resumePromise = resumeAudioContext();
+
+            updateBackgroundVolume();
+
+            const playPromise = backgroundMusic.play();
+
+            await Promise.all([
+                resumePromise,
+                playPromise
+            ]);
+
+        } catch (error) {
+            console.error("Music tidak dapat dimainkan:", error);
+        }
+
     } else {
         backgroundMusic.pause();
     }
 });
+
 backgroundMusic.addEventListener("play", () => {
     musicIcon.textContent = "♫";
     updateBackgroundVolume();
 });
-backgroundMusic.addEventListener("pause", () => { musicIcon.textContent = "🔇"; });
+
+backgroundMusic.addEventListener("pause", () => {
+    musicIcon.textContent = "🔇";
+});
 
 /* =========================================
    TWO VOICE NOTES
 ========================================= */
+
 voiceNotes.forEach(note => {
     if (!note.audio || !note.button) return;
+
     note.button.addEventListener("click", async () => {
+
+        // Jika sedang diputar, pause
         if (!note.audio.paused && !note.audio.ended) {
             note.audio.pause();
             return;
         }
-        voiceNotes.forEach(other => { if (other !== note) resetVoiceNote(other); });
+
+        // Hentikan voice note lainnya
+        voiceNotes.forEach(other => {
+            if (other !== note) {
+                resetVoiceNote(other);
+            }
+        });
+
         try {
-            await note.audio.play();
+            // Resume AudioContext dan mulai voice note
+            const resumePromise = resumeAudioContext();
+
+            const playPromise = note.audio.play();
+
+            await Promise.all([
+                resumePromise,
+                playPromise
+            ]);
+
         } catch (error) {
-            console.error("Voice note tidak dapat dimainkan:", error);
+            console.error(
+                "Voice note tidak dapat dimainkan:",
+                error
+            );
+
             updateVoiceNoteUI(note, false);
+            updateBackgroundVolume();
         }
     });
+
     note.audio.addEventListener("play", () => {
         updateVoiceNoteUI(note, true);
         updateBackgroundVolume();
     });
+
     note.audio.addEventListener("pause", () => {
         updateVoiceNoteUI(note, false);
         updateBackgroundVolume();
     });
+
     note.audio.addEventListener("ended", () => {
         note.progress.style.width = "0%";
+
         updateVoiceNoteUI(note, false);
         updateBackgroundVolume();
     });
+
     note.audio.addEventListener("timeupdate", () => {
         if (note.audio.duration) {
-            note.progress.style.width = `${note.audio.currentTime / note.audio.duration * 100}%`;
+            note.progress.style.width =
+                `${note.audio.currentTime / note.audio.duration * 100}%`;
         }
     });
 });
+
 
 /* =========================================
    PHOTO LIGHTBOX
