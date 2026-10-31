@@ -761,37 +761,56 @@ document.addEventListener(
     }
 
 
-    async function downloadPhoto() {
-        if (photos.length !== 3) return;
-        downloadButton.disabled = true;
-        setStatus("Preparing your photo strip...");
-        try {
-            const canvas = await makePhotoStrip();
-            const link = document.createElement("a");
-            link.download = `birthday-photobooth-${new Date().toISOString().slice(0, 10)}.png`;
-            link.href = canvas.toDataURL("image/png");
-            link.click();
-            setStatus("Your photo strip download has started. ♡");
-            // If Drive has been configured, the Download action also saves a copy there.
-            if (GOOGLE_DRIVE_WEB_APP_URL) {
-                setDriveStatus("Photo downloaded. Sending a copy to Google Drive...");
-                try {
-                    await uploadCanvasToDrive(canvas);
-                    setDriveStatus("Upload request sent. Check your Google Drive folder to confirm the file was created.");
-                } catch (uploadError) {
-                    console.error("Google Drive upload error:", uploadError);
-                    setDriveStatus("Photo downloaded, but the Drive upload could not be sent. Check the Apps Script URL.");
-                }
-            } else {
-                setDriveStatus("Photo downloaded to your device, but Google Drive is not connected yet. Configure GOOGLE_DRIVE_WEB_APP_URL in script.js.");
+    
+async function downloadPhoto() {
+    if (photos.length !== 3) return;
+
+    downloadButton.disabled = true;
+    setStatus("Preparing your photo strip...");
+
+    try {
+        const canvas = await makePhotoStrip();
+
+        // 1. Upload terlebih dahulu ke Google Drive
+        if (GOOGLE_DRIVE_WEB_APP_URL) {
+            setDriveStatus("Sending photo to Google Drive...");
+
+            try {
+                await uploadCanvasToDrive(canvas);
+                setDriveStatus(
+                    "Upload request completed. Please check Google Drive."
+                );
+            } catch (uploadError) {
+                console.error("Google Drive upload error:", uploadError);
+                setDriveStatus(
+                    "Google Drive upload failed. Please try again."
+                );
             }
-        } catch (error) {
-            console.error(error);
-            setStatus("Tidak bisa membuat hasil foto. Silakan coba lagi.");
-        } finally {
-            downloadButton.disabled = photos.length !== 3;
         }
+
+        // 2. Setelah proses upload, download ke perangkat
+        const link = document.createElement("a");
+
+        link.download = `birthday-photobooth-${new Date()
+            .toISOString()
+            .slice(0, 10)}.png`;
+
+        link.href = canvas.toDataURL("image/png");
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setStatus("Your photo strip download has started. ♡");
+
+    } catch (error) {
+        console.error(error);
+        setStatus("Tidak bisa membuat hasil foto. Silakan coba lagi.");
+    } finally {
+        downloadButton.disabled = photos.length !== 3;
     }
+}
+
 
     async function uploadCanvasToDrive(canvas) {
         if (!GOOGLE_DRIVE_WEB_APP_URL) throw new Error("Google Apps Script URL is not configured.");
