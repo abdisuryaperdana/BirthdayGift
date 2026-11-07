@@ -272,7 +272,7 @@ body {
 
     overflow: hidden;
 
-    background: #000;
+    background: #7a1d3d;
 }
 
 /* Background Video */
@@ -2728,7 +2728,7 @@ video {
 .hero {
     min-height: 100svh;
     padding: 0;
-    background: #080608;
+    background: #7a1d3d;
 }
 
 .hero-video {
@@ -2880,44 +2880,207 @@ video {
     }
 }
 
-/* MOBILE ONLY: FIX HERO VIDEO */
+
+/* =========================================
+   MOBILE HERO - VIDEO TOP, TEXT BELOW
+========================================= */
+
+@media screen and (max-width: 768px) {
+
+    .hero {
+        width: 100%;
+        max-width: 100%;
+        min-height: auto;
+        height: auto;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+
+        padding: 0 16px 45px;
+        gap: 22px;
+
+        overflow: visible;
+        background: #7a1d3d;
+        text-align: center;
+    }
+
+    /* VIDEO FRAME */
+    .hero-video {
+        position: relative;
+
+        top: auto;
+        left: auto;
+
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+
+        object-fit: contain;
+        object-position: center;
+
+        border-radius: 16px;
+
+        margin-top: 24px;
+
+        flex-shrink: 0;
+    }
+
+    /* OVERLAY VIDEO */
+    .hero-overlay {
+        display: none;
+    }
+
+    /* TEXT BELOW VIDEO */
+    .hero-content {
+        position: relative;
+
+        width: 100%;
+        max-width: 500px;
+
+        margin: 0;
+        padding: 0;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        text-align: center;
+
+        color: #fffaf4;
+        text-shadow: none;
+    }
+
+    /* EYEBROW */
+    .hero .eyebrow {
+        font-size: 9px;
+        letter-spacing: 2px;
+        line-height: 1.6;
+
+        margin-bottom: 10px;
+
+        color: #ffe9df;
+    }
+
+    /* TITLE */
+    .hero h1 {
+        font-size: clamp(30px, 8vw, 42px);
+        line-height: 1.12;
+
+        margin: 0 0 14px;
+    }
+
+    .hero h1 span {
+        color: #ffe1d5;
+    }
+
+    /* DESCRIPTION */
+    .hero .hero-text {
+        width: 100%;
+        max-width: 340px;
+
+        font-size: 12px;
+        line-height: 1.75;
+
+        margin: 0 auto;
+
+        color: rgba(255, 250, 244, .9);
+    }
+
+}
+
+/* SMALL MOBILE */
+@media screen and (max-width: 390px) {
+
+    .hero {
+        padding-inline: 12px;
+        gap: 18px;
+    }
+
+    .hero-video {
+        margin-top: 20px;
+        border-radius: 12px;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .hero .hero-text {
+        font-size: 11px;
+    }
+
+}
+
+
+/* =========================================
+   FIX MOBILE HERO - FULL WIDTH
+========================================= */
+
 @media screen and (max-width: 768px) {
 
     html,
     body {
         width: 100%;
         max-width: 100%;
-        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+        overflow-x: clip;
     }
 
-    .main-content,
-    .hero {
+    .main-content {
         width: 100%;
-        max-width:120%;
-        overflow: hidden;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
     }
 
     .hero {
-        min-height: 100vh;
-        min-height: 50svh;
-        background: #7d1838;
+        position: relative;
+
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+
+        margin: 0;
+        padding: 0 12px 45px;
+
+        box-sizing: border-box;
+
+        overflow: hidden;
+
+        background: #7a1d3d;
     }
 
     .hero-video {
-        top: -18%;
-        left: 2.5%;
-        width: 95%;
-        height: 95%;
+        display: block;
+
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+
+        aspect-ratio: 16 / 9;
+
+        margin-top: 20px;
+
+        position: relative;
+        top: auto;
+        left: auto;
 
         object-fit: contain;
-        object-position: center;
 
-        border-radius: 16px;
-        background: #7d1838;
+        border-radius: 12px;
     }
 
-    .hero-overlay {
-        inset: 2.5%;
-        border-radius: 16px;
+    .hero-content {
+        width: 100%;
+        max-width: 100%;
+
+        margin: 0;
+        padding: 0;
+
+        box-sizing: border-box;
     }
+
 }
