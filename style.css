@@ -260,142 +260,61 @@ body {
 ========================================= */
 
 .hero {
-
+    position: relative;
     min-height: 100vh;
+    width: 100%;
 
     text-align: center;
 
-    background:
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        radial-gradient(
-            circle at 10% 90%,
-            rgba(238, 157, 174, .2),
-            transparent 25%
-        ),
+    overflow: hidden;
 
-        radial-gradient(
-            circle at 90% 10%,
-            rgba(255, 208, 124, .25),
-            transparent 25%
-        );
-
+    background: #000;
 }
 
+/* Background Video */
 
-.hero-content {
-
-    max-width: 850px;
-
-}
-
-
-.eyebrow {
-
-    font-size: 11px;
-
-    letter-spacing: 4px;
-
-    text-transform: uppercase;
-
-    color: var(--dark-pink);
-
-    margin-bottom: 20px;
-
-}
-
-
-.hero h1 {
-
-    font-family: "DM Serif Display", serif;
-
-    font-size: clamp(55px, 9vw, 110px);
-
-    line-height: .95;
-
-    margin-bottom: 30px;
-
-}
-
-
-.hero h1 span {
-
-    color: var(--dark-pink);
-
-    font-style: italic;
-
-}
-
-
-.hero-text {
-
-    max-width: 620px;
-
-    margin: auto;
-
-    color: #74696a;
-
-    line-height: 1.9;
-
-}
-
-
-.flower-decoration {
-
+.hero-video {
     position: absolute;
 
-    font-size: 150px;
+    top: 0;
+    left: 0;
 
-    opacity: .15;
+    width: 100%;
+    height: 100%;
 
-    animation: floatingFlower 6s ease-in-out infinite;
+    object-fit: cover;
+    object-position: center;
 
+    z-index: 0;
+
+    pointer-events: none;
 }
 
+/* Overlay Video */
 
-.hero-decoration {
+.hero-overlay {
+    position: absolute;
 
-    top: 15%;
+    inset: 0;
 
-    right: 5%;
+    background: rgba(0, 0, 0, 0.35);
 
+    z-index: 1;
 }
 
+/* Hero Content */
 
-/* scroll */
+.hero-content {
+    position: relative;
 
-.scroll-indicator {
+    z-index: 2;
 
-    margin-top: 80px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    gap: 10px;
-
-    font-size: 10px;
-
-    text-transform: uppercase;
-
-    letter-spacing: 3px;
-
-    opacity: .6;
-
+    max-width: 850px;
 }
-
-
-.scroll-line {
-
-    height: 50px;
-
-    width: 1px;
-
-    background: var(--dark);
-
-}
-
 
 /* =========================================
    PAPER NOTE
@@ -2165,10 +2084,6 @@ video {
     font-size: clamp(13px, 1.5vw, 16px);
 }
 
-.flower-decoration {
-    font-size: clamp(58px, 11vw, 150px);
-}
-
 .paper-note {
     width: min(650px, 100%);
     padding: clamp(36px, 6vw, 70px) clamp(24px, 5vw, 60px);
@@ -2539,10 +2454,6 @@ video {
         line-height: 1.8;
     }
 
-    .scroll-indicator {
-        margin-top: 48px;
-    }
-
     .paper-note {
         padding: 44px 25px;
     }
@@ -2807,5 +2718,206 @@ video {
     .photo-card,
     .photo-card:hover {
         transition: none;
+    }
+}
+
+
+/* =========================================
+   HERO VIDEO FRAME + CONTENT REFINEMENT
+   ========================================= */
+.hero {
+    min-height: 100svh;
+    padding: 0;
+    background: #080608;
+}
+
+.hero-video {
+    top: 3.5%;
+    left: 3.5%;
+    width: 93%;
+    height: 93%;
+    border-radius: 22px;
+    object-fit: cover;
+}
+
+.hero-overlay {
+    inset: 3.5%;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(0,0,0,.12) 0%, rgba(0,0,0,.28) 42%, rgba(0,0,0,.58) 100%);
+}
+
+.hero-content {
+    width: min(760px, 88%);
+    margin-top: clamp(90px, 16vh, 170px);
+    padding: 24px 0;
+    color: #fffaf4;
+    text-shadow: 0 2px 14px rgba(0,0,0,.55);
+}
+
+.hero .eyebrow {
+    color: #ffe9df;
+    font-size: clamp(9px, 1vw, 12px);
+    letter-spacing: 3px;
+}
+
+.hero h1 {
+    color: #fffaf4;
+    font-size: clamp(34px, 5.2vw, 72px);
+    line-height: 1.12;
+    margin: 14px 0 18px;
+}
+
+.hero h1 span { color: #ffe1d5; }
+
+.hero-text {
+    max-width: 620px;
+    margin: 0 auto;
+    color: rgba(255,250,244,.94);
+    font-size: clamp(12px, 1.15vw, 15px);
+    line-height: 1.75;
+}
+
+@media (max-width: 768px) {
+    .hero-video {
+        top: 2.5%; left: 2.5%; width: 95%; height: 95%;
+        border-radius: 16px;
+    }
+    .hero-overlay { inset: 2.5%; border-radius: 16px; }
+    .hero-content {
+        width: 86%;
+        margin-top: 12vh;
+        padding: 18px 0;
+    }
+    .hero h1 { font-size: clamp(30px, 8vw, 48px); }
+    .hero-text { font-size: 12px; line-height: 1.7; }
+    
+}
+
+@media (max-height: 600px) {
+    .hero-content { margin-top: 7vh; }
+    .hero h1 { font-size: clamp(28px, 5vw, 52px); }
+}
+
+
+/* =========================================
+   HERO - LOWER TEXT POSITION
+========================================= */
+
+.hero {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    padding: 0 24px 35px;
+    box-sizing: border-box;
+}
+
+/* Content turun ke bagian bawah */
+.hero-content {
+    width: 100%;
+    max-width: 700px;
+
+    margin: 0 auto;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 0;
+}
+
+/* Eyebrow */
+.hero .eyebrow {
+    margin-bottom: 5px;
+
+    font-size: 9px;
+    letter-spacing: 2px;
+}
+
+/* Title */
+.hero h1 {
+    margin: 0 0 10px;
+
+    font-size: clamp(32px, 5vw, 60px);
+    line-height: 1.05;
+}
+
+/* Description */
+.hero .hero-text {
+    max-width: 600px;
+
+    margin: 0 auto;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+
+    .hero {
+        padding: 0 20px 38px;
+    }
+
+    .hero h1 {
+        font-size: clamp(30px, 8vw, 42px);
+        line-height: 1.08;
+
+        margin-bottom: 8px;
+    }
+
+    .hero .eyebrow {
+        font-size: 8px;
+        margin-bottom: 5px;
+    }
+
+    .hero .hero-text {
+        max-width: 340px;
+
+        font-size: 11px;
+        line-height: 1.5;
+    }
+}
+
+/* MOBILE ONLY: FIX HERO VIDEO */
+@media screen and (max-width: 768px) {
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .main-content,
+    .hero {
+        width: 100%;
+        max-width:120%;
+        overflow: hidden;
+    }
+
+    .hero {
+        min-height: 100vh;
+        min-height: 50svh;
+        background: #7d1838;
+    }
+
+    .hero-video {
+        top: -18%;
+        left: 2.5%;
+        width: 95%;
+        height: 95%;
+
+        object-fit: contain;
+        object-position: center;
+
+        border-radius: 16px;
+        background: #7d1838;
+    }
+
+    .hero-overlay {
+        inset: 2.5%;
+        border-radius: 16px;
     }
 }
