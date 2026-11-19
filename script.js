@@ -647,7 +647,7 @@ document.addEventListener(
 );
 
 /* =========================================
-   LITTLE PHOTOBOOTH
+   LITTLE PHOTOBOOTH (4 TAKES -> 8 SLOTS, 1080x1920)
 ========================================= */
 (() => {
     const video = document.getElementById("pbVideo");
@@ -664,7 +664,11 @@ document.addEventListener(
     const countdown = document.getElementById("pbCountdown");
     const photoCount = document.getElementById("pbPhotoCount");
     const strip = document.getElementById("pbStrip");
-    const slotLabels = ["your smile goes here", "and another one", "one to remember"];
+
+    const TOTAL_PHOTOS = 4;
+    const OUTPUT_WIDTH = 1080;
+    const OUTPUT_HEIGHT = 1920;
+    const slotLabels = ["your smile", "another one", "keep going", "one to remember"];
 
     // Paste your deployed Google Apps Script Web App URL here to enable Drive upload.
     const GOOGLE_DRIVE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxVkdEnA_SkYUUyzNXwhVEvcpwY7nQ-DJQ-Dhl03GjyVUgKqtEUkaHJwl_jKWDNvbGXnQ/exec";
@@ -672,6 +676,23 @@ document.addEventListener(
     let cameraStream = null;
     let photos = [];
     let sessionRunning = false;
+
+    // Urutan 8 slot: tiap angka = indeks foto (0-3), muncul 2x.
+    // Aturan: tidak ada foto yang sama dalam satu baris (slot 0-1, 2-3, 4-5, 6-7).
+    function createLayout() {
+        const base = Array.from({ length: TOTAL_PHOTOS }, (_, i) => i).flatMap(i => [i, i]);
+        let result;
+        do {
+            result = [...base];
+            for (let i = result.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [result[i], result[j]] = [result[j], result[i]];
+            }
+        } while (result.some((value, k) => k % 2 === 0 && value === result[k + 1]));
+        return result;
+    }
+
+    let layout = createLayout();
 
     function setStatus(message) { status.textContent = message; }
     function setDriveStatus(message) { driveStatus.textContent = message; }
@@ -696,7 +717,7 @@ document.addEventListener(
             document.querySelector(".pb-live-dot")?.classList.add("is-live");
             startSessionButton.disabled = false;
             startCameraButton.textContent = "Restart Camera";
-            setStatus("Camera ready! When you're ready, take your three photos.");
+            setStatus("Camera ready! When you're ready, take your four photos.");
         } catch (error) {
             console.error("Photobooth camera error:", error);
             let message = "Kamera tidak dapat dibuka. Periksa izin kamera browser.";
@@ -734,26 +755,28 @@ document.addEventListener(
         return canvas.toDataURL("image/jpeg", 0.92);
     }
 
+    // 8 slot (2 kolom x 4 baris): foto ke-N tampil di kedua kolom pada baris ke-N
     function renderSlots() {
         const slots = strip.querySelectorAll(".pb-photo-slot");
         slots.forEach((slot, index) => {
+            const photoIndex = layout[index];
             slot.replaceChildren();
             const number = document.createElement("span");
-            number.textContent = String(index + 1).padStart(2, "0");
+            number.textContent = String(photoIndex + 1).padStart(2, "0");
             slot.appendChild(number);
-            if (photos[index]) {
+            if (photos[photoIndex]) {
                 const img = document.createElement("img");
-                img.src = photos[index];
-                img.alt = `Photobooth photo ${index + 1}`;
+                img.src = photos[photoIndex];
+                img.alt = `Photobooth photo ${photoIndex + 1}`;
                 slot.appendChild(img);
             } else {
                 const label = document.createElement("small");
-                label.textContent = slotLabels[index];
+                label.textContent = slotLabels[photoIndex];
                 slot.appendChild(label);
             }
         });
-        photoCount.textContent = `${photos.length} / 3`;
-        const complete = photos.length === 3;
+        photoCount.textContent = `${photos.length} / ${TOTAL_PHOTOS}`;
+        const complete = photos.length === TOTAL_PHOTOS;
         downloadButton.disabled = !complete;
         retakeButton.disabled = photos.length === 0 || sessionRunning;
     }
@@ -762,19 +785,20 @@ document.addEventListener(
         if (!cameraStream || sessionRunning) return;
         sessionRunning = true;
         photos = [];
+        layout = createLayout();
         renderSlots();
         startSessionButton.disabled = true;
         retakeButton.disabled = true;
         try {
-            for (let i = 0; i < 3; i++) {
-                setStatus(`Get ready for photo ${i + 1} of 3...`);
+            for (let i = 0; i < TOTAL_PHOTOS; i++) {
+                setStatus(`Get ready for photo ${i + 1} of ${TOTAL_PHOTOS}...`);
                 await runCountdown(3);
                 photos.push(capturePhoto());
                 renderSlots();
                 setStatus(`Photo ${i + 1} captured!`);
-                if (i < 2) await wait(650);
+                if (i < TOTAL_PHOTOS - 1) await wait(650);
             }
-            setStatus("All three photos are ready! Download your photo strip to save it to your device and Google Drive.");
+            setStatus("All four photos are ready! Download your photo strip to save it to your device and Google Drive.");
         } catch (error) {
             console.error("Photobooth capture error:", error);
             setStatus("Gagal mengambil foto. Pastikan kamera masih aktif, lalu coba lagi.");
@@ -785,188 +809,279 @@ document.addEventListener(
         }
     }
 
-    
-    function makePhotoStrip() {
+    function loadImage(src) {
         return new Promise((resolve, reject) => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-
-            const width = 900;
-            const margin = 42;
-            const photoHeight = 675;
-            const gap = 24;
-            const header = 155;
-            const footer = 95;
-            const photoWidth = width - margin * 2;
-
-            canvas.width = width;
-            canvas.height =
-                margin + header +
-                (photoHeight * 3) +
-                (gap * 2) + footer + margin;
-
-            // Background burgundy
-            const gradient = ctx.createLinearGradient(0, 0, width, canvas.height);
-            gradient.addColorStop(0, "#9b3152");
-            gradient.addColorStop(0.5, "#761b3b");
-            gradient.addColorStop(1, "#511126");
-
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, canvas.height);
-
-            // Bingkai emas di bagian luar
-            ctx.strokeStyle = "#e9bb79";
-            ctx.lineWidth = 8;
-            ctx.strokeRect(14, 14, width - 28, canvas.height - 28);
-
-            // Garis putus-putus dekoratif
-            ctx.save();
-            ctx.strokeStyle = "#f5d8a8";
-            ctx.lineWidth = 2;
-            ctx.setLineDash([8, 9]);
-            ctx.strokeRect(28, 28, width - 56, canvas.height - 56);
-            ctx.restore();
-
-            // Header dekoratif
-            ctx.textAlign = "center";
-            ctx.textBaseline = "alphabetic";
-
-            ctx.fillStyle = "#ffdda0";
-            ctx.font = "bold 24px Arial, sans-serif";
-            ctx.fillText("✦  A SPECIAL DAY  ✦", width / 2, margin + 28);
-
-            ctx.fillStyle = "#fff1cf";
-            ctx.font = "bold 76px cursive";
-            ctx.fillText("birthday party!", width / 2, margin + 100);
-
-            ctx.fillStyle = "#ffd9df";
-            ctx.font = "34px cursive";
-            ctx.fillText(
-                "little moments, big memories ♡",
-                width / 2,
-                margin + 143
-            );
-
-            // Ilustrasi pesta
-            ctx.font = "55px sans-serif";
-            ctx.textAlign = "left";
-            ctx.fillText("🎉", margin + 8, margin + 90);
-
-            ctx.textAlign = "right";
-            ctx.fillText("🎂", width - margin - 8, margin + 145);
-
-            const imagePromises = photos.map(src =>
-                new Promise((res, rej) => {
-                    const img = new Image();
-                    img.onload = () => res(img);
-                    img.onerror = rej;
-                    img.src = src;
-                })
-            );
-
-            Promise.all(imagePromises)
-                .then(images => {
-                    let y = margin + header;
-
-                    images.forEach(img => {
-                        // Bingkai krem di setiap foto
-                        ctx.fillStyle = "#fff0d6";
-                        ctx.fillRect(
-                            margin - 4,
-                            y - 4,
-                            photoWidth + 8,
-                            photoHeight + 8
-                        );
-
-                        // Crop foto agar memenuhi area
-                        const scale = Math.max(
-                            photoWidth / img.width,
-                            photoHeight / img.height
-                        );
-
-                        const sourceWidth = photoWidth / scale;
-                        const sourceHeight = photoHeight / scale;
-                        const sx = (img.width - sourceWidth) / 2;
-                        const sy = (img.height - sourceHeight) / 2;
-
-                        ctx.drawImage(
-                            img,
-                            sx, sy,
-                            sourceWidth, sourceHeight,
-                            margin, y,
-                            photoWidth, photoHeight
-                        );
-
-                        y += photoHeight + gap;
-                    });
-
-                    // Footer
-                    ctx.textAlign = "center";
-                    ctx.fillStyle = "#ffe3a9";
-                    ctx.font = "42px cursive";
-                    ctx.fillText(
-                        "✦ made with love ♡ ✦",
-                        width / 2,
-                        canvas.height - margin - 20
-                    );
-
-                    resolve(canvas);
-                })
-                .catch(reject);
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
         });
     }
 
+    // Hasil akhir: 1080 x 1920, 8 foto (4 foto diduplikasi ke 2 kolom)
+        // Hasil akhir 1080 x 1920: dua tiket, masing-masing 4 foto (total 8 foto)
+    async function makePhotoStrip() {
+        const canvas = document.createElement("canvas");
+        canvas.width = OUTPUT_WIDTH;
+        canvas.height = OUTPUT_HEIGHT;
+        const ctx = canvas.getContext("2d");
 
-    
-async function downloadPhoto() {
-    if (photos.length !== 3) return;
+        // Pastikan font sudah siap sebelum digambar ke canvas
+        try {
+            await Promise.all([
+                document.fonts.load("italic 80px 'DM Serif Display'"),
+                document.fonts.load("80px 'DM Serif Display'"),
+                document.fonts.load("700 60px Poppins")
+            ]);
+        } catch (e) { /* fallback font */ }
 
-    downloadButton.disabled = true;
-    setStatus("Preparing your photo strip...");
+        const W = OUTPUT_WIDTH;
+        const H = OUTPUT_HEIGHT;
+        const MAROON = "#6b1114";
+        const CREAM = "#fdf1e6";
+        const INK = "#7a1519";
+        const SERIF = "'DM Serif Display', serif";
 
-    try {
-        const canvas = await makePhotoStrip();
+        // ---------- Ukuran layout ----------
+        const outer = 40;                       // jarak tiket ke tepi canvas
+        const gap = 40;                         // jarak antar tiket
+        const tW = (W - outer * 2 - gap) / 2;   // 480
+        const tH = H - outer * 2;               // 1840
+        const ty = outer;
+        const f = 18;                           // jarak garis frame dalam
+        const frameW = tW - f * 2;
+        const frameH = tH - f * 2;
+        const frameY = ty + f;
 
-        // 1. Upload terlebih dahulu ke Google Drive
-        if (GOOGLE_DRIVE_WEB_APP_URL) {
-            setDriveStatus("Processing photo...");
+        const titleH = 150, infoH = 150, saveH = 70, brandH = 190;
+        const infoTop = frameY + titleH;
+        const infoBottom = infoTop + infoH;
+        const saveBottom = frameY + frameH - brandH;
+        const saveTop = saveBottom - saveH;
 
-            try {
-                await uploadCanvasToDrive(canvas);
-                setDriveStatus(
-                    "Upload request completed. Please check your devices."
-                );
-            } catch (uploadError) {
-                console.error("Google Drive upload error:", uploadError);
-                setDriveStatus(
-                    "Process failed. Please try again."
-                );
+        const photosTop = infoBottom + 24;
+        const photosBottom = saveTop - 24;
+        const pGap = 16;
+        const pad = 28;
+        const pW = frameW - pad * 2;
+        const pH = (photosBottom - photosTop - pGap * 3) / 4;
+        const dateText = "Today, she turns";
+
+        // ---------- Helper ----------
+        function fitFont(text, makeFont, maxW, startSize) {
+            let size = startSize;
+            ctx.font = makeFont(size);
+            while (ctx.measureText(text).width > maxW && size > 10) {
+                size -= 2;
+                ctx.font = makeFont(size);
             }
+            return size;
         }
 
-        // 2. Setelah proses upload, download ke perangkat
-        const link = document.createElement("a");
+        function roundedRect(x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
 
-        link.download = `birthday-photobooth-${new Date()
-            .toISOString()
-            .slice(0, 10)}.png`;
+        // Bentuk tiket: sudut cekung + tepi kiri/kanan bergerigi
+        function ticketPath(x, y, w, h) {
+            const cr = 34;      // radius sudut cekung
+            const nr = 15;      // radius gerigi
+            const n = Math.floor((h - cr * 2) / 50);
+            const step = (h - cr * 2) / n;
+            const centers = [];
+            for (let k = 0; k < n; k++) centers.push(y + cr + step * (k + 0.5));
 
-        link.href = canvas.toDataURL("image/png");
+            ctx.beginPath();
+            ctx.moveTo(x + cr, y);
+            ctx.lineTo(x + w - cr, y);
+            ctx.arc(x + w, y, cr, Math.PI, Math.PI / 2, true);
+            centers.forEach(cy => {
+                ctx.lineTo(x + w, cy - nr);
+                ctx.arc(x + w, cy, nr, -Math.PI / 2, Math.PI / 2, true);
+            });
+            ctx.lineTo(x + w, y + h - cr);
+            ctx.arc(x + w, y + h, cr, -Math.PI / 2, -Math.PI, true);
+            ctx.lineTo(x + cr, y + h);
+            ctx.arc(x, y + h, cr, 0, -Math.PI / 2, true);
+            for (let k = centers.length - 1; k >= 0; k--) {
+                const cy = centers[k];
+                ctx.lineTo(x, cy + nr);
+                ctx.arc(x, cy, nr, Math.PI / 2, -Math.PI / 2, true);
+            }
+            ctx.lineTo(x, y + cr);
+            ctx.arc(x, y, cr, Math.PI / 2, 0, true);
+            ctx.closePath();
+        }
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        function hLine(x1, x2, y) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y);
+            ctx.lineTo(x2, y);
+            ctx.stroke();
+        }
+        function vLine(x, y1, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x, y1);
+            ctx.lineTo(x, y2);
+            ctx.stroke();
+        }
 
-        setStatus("Your photo strip download has started. ♡");
+        function drawTicket(tx) {
+            const fx = tx + f;
+            const cx = fx + frameW / 2;
 
-    } catch (error) {
-        console.error(error);
-        setStatus("Tidak bisa membuat hasil foto. Silakan coba lagi.");
-    } finally {
-        downloadButton.disabled = photos.length !== 3;
+            // Badan tiket
+            ticketPath(tx, ty, tW, tH);
+            ctx.fillStyle = CREAM;
+            ctx.fill();
+
+            // Garis frame dalam
+            ctx.strokeStyle = INK;
+            ctx.lineWidth = 3.5;
+            roundedRect(fx, frameY, frameW, frameH, 16);
+            ctx.stroke();
+
+            ctx.lineWidth = 3;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = INK;
+
+            // Judul
+            fitFont("Birthday Girl", s => `italic ${s}px ${SERIF}`, frameW - 60, 100);
+            ctx.fillText("Birthday Girl", cx, frameY + titleH / 2 + 4);
+
+            // Baris info
+            hLine(fx, fx + frameW, infoTop);
+            hLine(fx, fx + frameW, infoBottom);
+            const c1 = frameW * 0.24;
+            const c2 = frameW * 0.24;
+            const c3 = frameW - c1 - c2;
+            const x1 = fx + c1;
+            const x2 = x1 + c2;
+            vLine(x1, infoTop, infoBottom);
+            vLine(x2, infoTop, infoBottom);
+            hLine(x2, fx + frameW, infoTop + infoH / 2);
+
+            ctx.font = `30px ${SERIF}`;
+            ctx.fillText("Row", fx + c1 / 2, infoTop + 38);
+            ctx.fillText("Show", x1 + c2 / 2, infoTop + 38);
+            ctx.font = `74px ${SERIF}`;
+            ctx.fillText("02", fx + c1 / 2, infoTop + 106);
+            ctx.fillText("12", x1 + c2 / 2, infoTop + 106);
+
+            const c3x = x2 + c3 / 2;
+            fitFont(dateText, s => `${s}px ${SERIF}`, c3 - 24, 34);
+            ctx.fillText(dateText, c3x, infoTop + infoH / 4 + 2);
+            ctx.font = `bold 44px ${SERIF}`;
+            ctx.fillText("25th", c3x, infoTop + (infoH * 3) / 4 + 2);
+
+            // Strip "SAVE THE BEST MOMENT"
+            hLine(fx, fx + frameW, saveTop);
+            hLine(fx, fx + frameW, saveBottom);
+            const saveText = "May your new age bring you happiness.";
+            fitFont(saveText, s => `${s}px ${SERIF}`, frameW - 30, 26);
+            ctx.fillText(saveText, cx, saveTop + saveH / 2 + 2);
+
+            // Brand: "with love."
+                        let size = 90;
+            let w1, w2;
+            const gapW = 24;   // jarak antara "Gaby's" dan "Day." (ubah sesuai selera)
+            do {
+                ctx.font = `italic ${size}px ${SERIF}`;
+                w1 = ctx.measureText("Gaby's").width;
+                ctx.font = `bold ${size}px Poppins, Arial, sans-serif`;
+                w2 = ctx.measureText("Day.").width;
+                if (w1 + gapW + w2 <= frameW - 50) break;
+                size -= 2;
+            } while (size > 20);
+            const startX = cx - (w1 + gapW + w2) / 2;
+            const brandY = saveBottom + brandH / 2 + 4;
+            ctx.textAlign = "left";
+            ctx.font = `italic ${size}px ${SERIF}`;
+            ctx.fillText("Gaby's", startX, brandY);
+            ctx.font = `bold ${size}px Poppins, Arial, sans-serif`;
+            ctx.fillText("Day.", startX + w1 + gapW, brandY);
+            ctx.textAlign = "center";
+        }
+
+        // ---------- Gambar ----------
+        ctx.fillStyle = MAROON;
+        ctx.fillRect(0, 0, W, H);
+
+        drawTicket(outer);
+        drawTicket(outer + tW + gap);
+
+        // Foto: slotIndex 0-7 -> baris = slot/2, kolom (tiket) = slot%2
+        const images = await Promise.all(photos.map(loadImage));
+
+        for (let slotIndex = 0; slotIndex < TOTAL_PHOTOS * 2; slotIndex++) {
+            const row = Math.floor(slotIndex / 2);
+            const col = slotIndex % 2;
+            const img = images[layout[slotIndex]];
+
+            const x = outer + col * (tW + gap) + f + pad;
+            const y = photosTop + row * (pH + pGap);
+
+            // Crop tengah agar memenuhi area
+            const scale = Math.max(pW / img.width, pH / img.height);
+            const sw = pW / scale;
+            const sh = pH / scale;
+            const sx = (img.width - sw) / 2;
+            const sy = (img.height - sh) / 2;
+
+            ctx.drawImage(img, sx, sy, sw, sh, x, y, pW, pH);
+
+            ctx.strokeStyle = INK;
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y, pW, pH);
+        }
+
+        return canvas;
     }
-}
 
+    async function downloadPhoto() {
+        if (photos.length !== TOTAL_PHOTOS) return;
+
+        downloadButton.disabled = true;
+        setStatus("Preparing your photo strip...");
+
+        try {
+            const canvas = await makePhotoStrip();
+
+            // 1. Upload ke Google Drive
+            if (GOOGLE_DRIVE_WEB_APP_URL) {
+                setDriveStatus("Processing photo...");
+                try {
+                    await uploadCanvasToDrive(canvas);
+                    setDriveStatus("Upload request completed. Please check your devices.");
+                } catch (uploadError) {
+                    console.error("Google Drive upload error:", uploadError);
+                    setDriveStatus("Process failed. Please try again.");
+                }
+            }
+
+            // 2. Download ke perangkat (1080x1920)
+            const link = document.createElement("a");
+            link.download = `birthday-photobooth-${new Date().toISOString().slice(0, 10)}.png`;
+            link.href = canvas.toDataURL("image/png");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            setStatus("Your photo strip download has started. ♡");
+        } catch (error) {
+            console.error(error);
+            setStatus("Tidak bisa membuat hasil foto. Silakan coba lagi.");
+        } finally {
+            downloadButton.disabled = photos.length !== TOTAL_PHOTOS;
+        }
+    }
 
     async function uploadCanvasToDrive(canvas) {
         if (!GOOGLE_DRIVE_WEB_APP_URL) throw new Error("Google Apps Script URL is not configured.");
@@ -986,13 +1101,12 @@ async function downloadPhoto() {
         });
     }
 
-
     startCameraButton.addEventListener("click", openCamera);
     startSessionButton.addEventListener("click", startSession);
     retakeButton.addEventListener("click", () => {
         photos = [];
         renderSlots();
-        setStatus("Ready for another round! Take your three photos when you're ready.");
+        setStatus("Ready for another round! Take your four photos when you're ready.");
         startSession();
     });
     downloadButton.addEventListener("click", downloadPhoto);
