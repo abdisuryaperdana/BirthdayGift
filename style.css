@@ -3084,3 +3084,203 @@ video {
     }
 
 }
+
+/* =========================================
+   PHOTOBOOTH 1080x1920 (8 SLOTS, 2 x 4)
+========================================= */
+.pb-strip {
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 320px);
+    aspect-ratio: 9 / 16;
+    padding: 14px 14px 10px;
+}
+
+.pb-strip-header { padding: 4px 0 8px; }
+.pb-strip-small { font-size: 7px; margin-bottom: 2px; }
+.pb-strip-brand { font-size: 30px; }
+.pb-strip-subtitle { margin-top: 3px; font-size: 14px; }
+
+.pb-hat { top: 8px; left: 6px; font-size: 26px; }
+.pb-cake { top: 40px; right: 6px; font-size: 26px; }
+
+.pb-strip-grid {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    gap: 6px 8px;
+}
+
+.pb-strip .pb-strip-grid .pb-photo-slot {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    border-width: 2px;
+}
+
+.pb-strip .pb-photo-slot small { font-size: 13px; padding: 4px; text-align: center; }
+.pb-strip .pb-photo-slot > span { width: 18px; height: 18px; font-size: 8px; top: 4px; left: 4px; }
+
+.pb-strip-footer { padding-top: 6px; font-size: 18px; }
+.pb-footer-heart { font-size: 20px; }
+
+/* =========================================
+   PHOTOBOOTH - TICKET DESIGN (2 TIKET, 1080x1920)
+========================================= */
+.pb-strip {
+    --pb-maroon: #6b1114;
+    --pb-cream: #fdf1e6;
+    --pb-ink: #7a1519;
+
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: min(100%, 340px);
+    aspect-ratio: 9 / 16;
+    padding: 12px;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: var(--pb-maroon);
+    box-shadow: 0 12px 30px rgba(60, 10, 12, .3);
+}
+.pb-strip::before { display: none; }
+
+/* Tiket: sudut cekung + tepi bergerigi */
+.pb-ticket {
+    position: relative;
+    min-width: 0;
+    height: 100%;
+    background:
+        radial-gradient(circle at 0 0,       var(--pb-maroon) 3.4cqw, transparent calc(3.4cqw + .5px)),
+        radial-gradient(circle at 100% 0,    var(--pb-maroon) 3.4cqw, transparent calc(3.4cqw + .5px)),
+        radial-gradient(circle at 0 100%,    var(--pb-maroon) 3.4cqw, transparent calc(3.4cqw + .5px)),
+        radial-gradient(circle at 100% 100%, var(--pb-maroon) 3.4cqw, transparent calc(3.4cqw + .5px)),
+        var(--pb-cream);
+}
+.pb-ticket::before,
+.pb-ticket::after {
+    content: "";
+    position: absolute;
+    top: 3.4cqw;
+    bottom: 3.4cqw;
+    width: 3cqw;
+    background: radial-gradient(circle at center, var(--pb-maroon) 1.45cqw, transparent 1.5cqw) 0 0 / 3cqw 5cqw repeat-y;
+    pointer-events: none;
+}
+.pb-ticket::before { left: -1.5cqw; }
+.pb-ticket::after  { right: -1.5cqw; }
+
+.pb-ticket-frame {
+    position: absolute;
+    inset: 1.8cqw;
+    display: flex;
+    flex-direction: column;
+    border: .35cqw solid var(--pb-ink);
+    border-radius: 1.5cqw;
+    overflow: hidden;
+    color: var(--pb-ink);
+}
+
+/* Judul */
+.pb-ticket-title {
+    flex: 0 0 15cqw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "DM Serif Display", serif;
+    font-style: italic;
+    font-size: 6.4cqw;
+    white-space: nowrap;
+}
+
+/* Row / Show / Tanggal */
+.pb-ticket-info {
+    flex: 0 0 15cqw;
+    display: grid;
+    grid-template-columns: 24% 24% 1fr;
+    border-top: .3cqw solid var(--pb-ink);
+    border-bottom: .3cqw solid var(--pb-ink);
+}
+.pb-info-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: .3cqw solid var(--pb-ink);
+    font-family: "DM Serif Display", serif;
+    line-height: 1;
+    min-width: 0;
+}
+.pb-info-cell small { font-size: 3cqw; }
+.pb-info-cell b { font-size: 7cqw; font-weight: 400; margin-top: .6cqw; }
+.pb-info-wide { border-right: 0; display: flex; flex-direction: column; justify-content: stretch; }
+.pb-info-date,
+.pb-info-time {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.pb-info-date { font-size: 2.9cqw; border-bottom: .3cqw solid var(--pb-ink); }
+.pb-info-time { font-size: 6cqw; font-weight: 700; }
+
+/* Area foto */
+.pb-ticket-photos {
+    flex: 1;
+    min-height: 0;
+    margin: 2.4cqw 2.8cqw;
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    gap: 1.6cqw;
+}
+.pb-strip .pb-ticket .pb-photo-slot {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    border: .3cqw solid var(--pb-ink);
+    border-radius: 0;
+    background: #ead6cc;
+    box-shadow: none;
+}
+.pb-strip .pb-ticket .pb-photo-slot > span { display: none; }
+.pb-strip .pb-ticket .pb-photo-slot small {
+    color: var(--pb-ink);
+    font-size: 2.6cqw;
+    opacity: .7;
+}
+
+/* Footer */
+.pb-ticket-save {
+    flex: 0 0 7cqw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: .3cqw solid var(--pb-ink);
+    border-bottom: .3cqw solid var(--pb-ink);
+    font-family: "DM Serif Display", serif;
+    font-size: 2.3cqw;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.pb-ticket-brand {
+    flex: 0 0 19cqw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1cqw;
+    font-size: 8cqw;
+    line-height: 1;
+    white-space: nowrap;
+}
+.pb-ticket-brand span { font-family: "DM Serif Display", serif; font-style: italic; }
+.pb-ticket-brand b { font-family: "Poppins", sans-serif; font-weight: 700; }
